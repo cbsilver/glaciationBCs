@@ -9,7 +9,7 @@ Python package for capturing glacial cycles via boundary conditions for hydro-ge
 
 * `pythonBCsOGS.py` contains all the BC objects for OGS using the classes for glacier, crust and air
 
-## Tools:
+## Tests:
 * `glaciation_test.py` simple tests for checking functionality
 
 ## Tools:

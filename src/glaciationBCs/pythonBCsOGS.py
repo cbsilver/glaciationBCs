@@ -3,9 +3,9 @@
 # Physical units: depending on parameter set, see below!
 
 import OpenGeoSys
-import glacierclass as glc	#glacial objects
-import crustclass as crc 	#crustal objects
-import airclass as air		# aerial objects
+from glaciationBCs import glacierclass as glc	#glacial objects
+from glaciationBCs import crustclass as crc 	#crustal objects
+from glaciationBCs import airclass as air		# aerial objects
 
 import numpy as np
 
