@@ -162,10 +162,13 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: hydraulic flux
 		x, y, z = coords
 		
-		# prescribe hydraulic flux
-		value = self.glacier.local_meltwater(x,t)
-		
-		return (True, value)
+		if x-self.glacier.x_0 <= self.glacier.length(t):
+			# get hydraulic flux under glacier
+			value = self.glacier.local_meltwater(x,t)
+			derivative = [ 0.0, 0.0 ]
+			return (True, value, derivative)
+		# no BC => free boundary then (no flux)
+		return (False, 0.0, [ 0.0, 0.0 ])
 
 class BCH_SourceFromDeflection(OpenGeoSys.SourceTerm):
 

@@ -245,11 +245,12 @@ class glacier():
 
 	# analytical function for the glacier meltwater production
 	def local_meltwater(self,x,t):
-		# height difference of the ice column
-		dh = 0.0
-		if (self.t_2 < t <= self.t_3):
-			dh = self.local_height(x,self.t_1) - self.local_height(x,t)
-		return dh
+		# constant flux at a temperate glacier base
+		q = 6e-3 * 1 / s_a # = 6mm/a
+		# constant flux at a frozen glacier base
+		q = 0.0
+		
+		return q
 
 	# auxiliary functions
 	def print_max_load(self):
