@@ -1,7 +1,9 @@
-import glacierclass as glc
-import crustclass as crc
+from glaciationBCs import glacierclass as glc	#glacial objects
+from glaciationBCs import crustclass as crc 	#crustal objects
+from glaciationBCs import airclass as air		# aerial objects
 import numpy as np
 import importlib
+from importlib import reload
 
 s_a = 365.25*24*3600 #=31557600 seconds per year
 
@@ -45,6 +47,7 @@ if (Set=="HM"): # units: kg, m, s, K
 	t_4 = t_3 + 10000 * s_a #a
 	
 glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
+importlib.reload(glaciationBCs)
 importlib.reload(glc)
 glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
 

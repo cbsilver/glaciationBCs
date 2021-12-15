@@ -3,6 +3,7 @@
 # Physical units: depending on parameter set, see below!
 
 import OpenGeoSys
+import glaciationBCs
 from glaciationBCs import glacierclass as glc	#glacial objects
 from glaciationBCs import crustclass as crc 	#crustal objects
 from glaciationBCs import airclass as air		# aerial objects
@@ -15,7 +16,7 @@ s_a = 365.25*24*3600 #=31557600 seconds per year
 T_N = 266.15 #K
 T_S = 276.15 #K
 T_C = 8 #K
-Set = "TH"
+Set = "HM"
 
 if (Set=="M"): # units: kg, m, s, K
 	L_dom = 120000 #m
@@ -240,6 +241,22 @@ class BCM_BottomDeflection(OpenGeoSys.BoundaryCondition):
 		
 		return (True, value)
 
+class BCM_DomainDisplacement(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self, L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4):
+		super(BCM_DomainDisplacement, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
+		if plotinput: self.glacier.plot_deflection()
+
+	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
+		x, y, z = coords
+		
+		# prescribe displacement u_y
+		value = self.glacier.local_displacement_heuristic(x,y,t)
+		
+		return (True, value)
+
 class BCM_BottomDisplacement_X(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self, path2data):
@@ -332,6 +349,8 @@ bc_M_crustal_south_Dirichlet_y = BCM_LateralDisplacement_Y(path2data)
 bc_M_crustal_below_Dirichlet_x = BCM_BottomDisplacement_X(path2data)
 bc_M_crustal_below_Dirichlet_y = BCM_BottomDisplacement_Y(path2data)
 #bc_M_crustal_below_Dirichlet_y = BCM_BottomDeflection(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
+#bc_M_glacier_above_Dirichlet_y = BCM_BottomDeflection(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
+bc_M_glacier_above_Dirichlet_y = BCM_DomainDisplacement(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
 #bc_M_crustal_north
 #bc_M_crustal_aside
 

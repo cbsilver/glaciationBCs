@@ -11,6 +11,8 @@ from math import pi, sin, cos, sinh, cosh, sqrt, exp
 # Physical constants in units: kg, m, s, K
 gravity = 9.81 #m/s²
 fricnum = 0.2
+b_sub = 0.300 # dim-less proportionality constant glacier height - subsidence
+b_reb = 0.225 # dim-less proportionality constant glacier height - rebounding
 
 # Numerical constants
 s_a = 365.25*24*3600 #=31557600 seconds per year
@@ -174,22 +176,20 @@ class glacier():
 		
 	# heuristic approximation from glacier height (Bense)
 	def local_deflection_rate_heuristic(self,x,t):
-		b = 0.3
-		br= 0.225
 		t_relax = (self.t_4-self.t_0) / 13 #~2500 a
 		h0 = self.local_height(x,self.t_0)
-		uy_max = -b * (self.local_height(x,self.t_1) - h0)
-		uy_med = uy_max + br * (self.local_height(x,self.t_2) - self.local_height(x,self.t_3))
+		uy_max = -b_sub * (self.local_height(x,self.t_1) - h0)
+		uy_med = uy_max + b_reb * (self.local_height(x,self.t_2) - self.local_height(x,self.t_3))
 		# time point when the ice has locally completely retreated
 		t_startPG = self.t_3 - (self.t_3-self.t_2) * (x-self.x_0) / self.L_max
 
 		vy = 0.0
 		if (self.t_0 < t <= self.t_1): #immediate deflection
-			vy = -b * self.local_height_rate(x,t)
+			vy = -b_sub * self.local_height_rate(x,t)
 		if (self.t_1 < t <= self.t_2): #constant subsidence
 			vy = 0.0
 		if (self.t_2 < t <= self.t_3): #restrained rebound
-			vy = -br * self.local_height_rate(x,t)
+			vy = -b_reb * self.local_height_rate(x,t)
 		if (t > t_startPG): #postglacial rebound (retarded)
 			dt = t - t_startPG
 			# process starts immediately after local post-glaciation
@@ -197,27 +197,41 @@ class glacier():
 		return vy
 
 	def local_deflection_heuristic(self,x,t):
-		b = 0.3
-		br= 0.225
 		t_relax = (self.t_4-self.t_0) / 13 #~2500 a
 		#t_relax = 2500 * 31557600 #s
 		h0 = self.local_height(x,self.t_0)
-		uy_max = -b * (self.local_height(x,self.t_1) - h0)
-		uy_med = uy_max + br * (self.local_height(x,self.t_2) - self.local_height(x,self.t_3))
+		uy_max = -b_sub * (self.local_height(x,self.t_1) - h0)
+		uy_med = uy_max + b_reb * (self.local_height(x,self.t_2) - self.local_height(x,self.t_3))
 		# time point when the ice has locally completely retreated
 		t_startPG = self.t_3 - (self.t_3-self.t_2) * (x-self.x_0) / self.L_max
 		
 		uy = 0.0
 		if (self.t_0 < t <= self.t_1): #immediate deflection
-			uy = -b * (self.local_height(x,t) - h0)
+			uy = -b_sub * (self.local_height(x,t) - h0)
 		if (self.t_1 < t <= self.t_2): #constant subsidence
 			uy = uy_max
 		if (self.t_2 < t <= self.t_3): #restrained rebound
-			uy = uy_max + br * (self.local_height(x,self.t_2) - self.local_height(x,t))
+			uy = uy_max + b_reb * (self.local_height(x,self.t_2) - self.local_height(x,t))
 		if (t > t_startPG): #postglacial rebound (retarded)
 			dt = t - t_startPG
 			# process starts immediately after local post-glaciation
 			uy = uy_med * exp(-dt/t_relax)
+		return uy
+
+	def local_displacement_heuristic(self,x,y,t):
+		# TODO: move constants on top
+		eps_yy = -0.0005
+		H_dom = 150000 #TODO scaling with 20?
+		uy_compaction = (H_dom-(-y)) * eps_yy
+		uy_deflection = self.local_deflection_heuristic(x,t)
+		
+		h0 = self.local_height(x,self.t_0)
+		uy_max = -b_sub * (self.local_height(x,self.t_1) - h0)
+		
+		if (abs(uy_max)>0.0):
+			uy = (1 + uy_compaction/uy_max) * uy_deflection
+		else:
+			uy = uy_deflection
 		return uy
 
 	# analytical function for the lithosphere deflection due to glacier load
