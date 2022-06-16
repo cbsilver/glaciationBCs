@@ -16,7 +16,7 @@ s_a = 365.25*24*3600 #=31557600 seconds per year
 T_N = 266.15 #K
 T_S = 276.15 #K
 T_C = 8 #K
-Set = "HM"
+Set = "TH"
 
 if (Set=="M"): # units: kg, m, s, K
 	L_dom = 120000 #m
@@ -62,7 +62,10 @@ if (Set=="TH"): # units: kg, m, a, K
 	t_3 = t_2 +  5000 #a
 	t_4 = t_3 + 10000 #a
 
-# Optional: Chose path to external data
+# Required: Choose vertical scaling factor
+y_sfactor = 20 #TODO!
+
+# Optional: Choose path to external data
 path2data = '~/Forschung/Simulations/OpenGeoSys/SedimentaryBasinBense/HM/dataGIA/'
 plotinput = False
 
@@ -98,7 +101,6 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 			value = self.glacier.temperature(x,t)
 		
 		return (True, value)
-		
 
 # Hydraulic BCs
 # -------------
@@ -187,6 +189,7 @@ class BCH_SourceFromDeflection(OpenGeoSys.SourceTerm):
 		Jac = [0.0, 0.0]
 		return (value, Jac)
 
+
 # Mechanics BCs
 # -------------
 class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
@@ -220,10 +223,10 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 		
 		if x-self.glacier.x_0 <= self.glacier.length(t):
 			value = self.glacier.normalstress(x,t)
-			derivative = [ 0.0, 0.0 ]
+			derivative = [ 0.0, 0.0,   ]
 			return (True, value, derivative)
 		# no BC => free boundary then (no flux)
-		return (False, 0.0, [ 0.0, 0.0 ])
+		return (False, 0.0, [ 0.0, 0.0,   ])
 
 class BCM_BottomDeflection(OpenGeoSys.BoundaryCondition):
 
@@ -237,7 +240,8 @@ class BCM_BottomDeflection(OpenGeoSys.BoundaryCondition):
 		x, y, z = coords
 		
 		# prescribe displacement u_y
-		value = self.glacier.local_deflection(x,t)
+		# scale here with 20 !TODO!
+		value = 20 * self.glacier.local_deflection(x,t)
 		
 		return (True, value)
 
@@ -253,7 +257,8 @@ class BCM_DomainDisplacement(OpenGeoSys.BoundaryCondition):
 		x, y, z = coords
 		
 		# prescribe displacement u_y
-		value = self.glacier.local_displacement_heuristic(x,y,t)
+		# scale here with 20 !TODO!
+		value = 20 * self.glacier.local_displacement_heuristic(x,y,t)
 		
 		return (True, value)
 
@@ -269,6 +274,7 @@ class BCM_BottomDisplacement_X(OpenGeoSys.BoundaryCondition):
 		
 		# prescribe displacement u_x
 		t_in_ka = t/s_a/1000
+		# ?TODO? y_scale = y/20
 		value = self.crust.interpolateX_data_uxuy(x,y,t_in_ka)[0]
 		
 		return (True, value)
@@ -289,6 +295,7 @@ class BCM_BottomDisplacement_Y(OpenGeoSys.BoundaryCondition):
 		
 		# prescribe displacement u_y
 		t_in_ka = t/s_a/1000
+		# ?TODO? y_scale = y/20
 		value = self.crust.interpolateX_data_uxuy(x,y,t_in_ka)[1]
 		
 		return (True, value)
