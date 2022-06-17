@@ -35,6 +35,17 @@ if (Set=="T"): # units: kg, m, a, K
 	t_3 = t_2 +  5000 #a
 	t_4 = t_3 + 10000 #a
 
+if (Set=="TH"): # units: kg, m, a, K
+	L_dom = 1150000 #m
+	L_max = 575000 #m
+	H_max = 3200 #m
+	x_0 = 0.0 #m
+	t_0 = 20000000 #a
+	t_1 = t_0 + 12500 #a
+	t_2 = t_1 +  5000 #a
+	t_3 = t_2 +  5000 #a
+	t_4 = t_3 + 10000 #a
+
 if (Set=="HM"): # units: kg, m, s, K
 	L_dom = 1150000 #m
 	L_max = 575000 #m

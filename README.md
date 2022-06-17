@@ -21,3 +21,14 @@ Python package for capturing glacial cycles via boundary conditions for hydro-ge
 
 ## TODO:
 * extend to multiple glacial cycles with hysteretic effects
+* 2D setting for x-y-coordinate system
+  - x as glacier advancing direction
+  - y as depth coordinate (negative in subsurface)
+  
+* 3D setting for x-y-surface coordinates
+  - pseudo 2D situation
+  - x as glacier advancing direction => functions(x,t) can remain the same
+  - z as depth coordinate: switch from x,y,z=coords to x,z,y=coords
+* BCH_SurfaceHydrohead => BCH_SurfaceHydrohead3D, but not needed in 3D
+* BCM_BottomDisplacement, BCM_LateralDisplacement => not needed in 3D
+* GIA interpolation so far only for 2D model

@@ -33,6 +33,8 @@ class time_control():
 		self.t_4 = t_4; #print("t4 = ", t_4)
 		self.t_5 = t_5; #print("t5 = ", t_5)
 		self.t_6 = t_6; #print("t6 = ", t_6)
+		
+	# def time modulation
 
 	def stagecontrol(self, t):
 		print("t = ", t)
@@ -46,17 +48,34 @@ class time_control():
 			return stages[3]
 		if (self.t_3 < t <= self.t_4):
 			return stages[4]
-		return "undefined glacier stage"
-		
-	def height(self, t):
-		if (     0.0 < t <= self.t_0):
+		if (self.t_4 < t <= self.t_5):
+			return stages[5]
+		if (self.t_5 < t <= self.t_6):
+			return stages[6]
+		return "undefined stage"
+	
+	# TODO virtual method time_factor, to be overload by glacierclass and airclass
+	
+	# to multiply with process variable
+	def time_factor_glacier(self, t):
+		if (     0.0 < t <= self.t_3):
 			return 0.0
-		if (self.t_0 < t <= self.t_1):
-			return self.H_max * (t-self.t_0) / (self.t_1-self.t_0)
-		if (self.t_1 < t <= self.t_2):
-			return self.H_max
-		if (self.t_2 < t <= self.t_3):
-			return self.H_max * (1 - (t-self.t_2) / (self.t_3-self.t_2))
 		if (self.t_3 < t <= self.t_4):
-			return 0.0
+			return (t-self.t_3) / (self.t_4-self.t_3)
+		if (self.t_4 < t <= self.t_5):
+			return 1.0
+		if (self.t_5 < t <= self.t_6):
+			return 1 - (t-self.t_5) / (self.t_6-self.t_5)
+		return 0.0
+
+	# to multiply with process variable TODO
+	def time_factor_air(self, t):
+		if (     0.0 < t <= self.t_1):
+			return 1.0
+		if (self.t_1 < t <= self.t_2):
+			return 1 - (t-self.t_1) / (self.t_2-self.t_1)
+		if (self.t_2 < t <= self.t_5):
+			return 1.0
+		if (self.t_5 < t <= self.t_6):
+			return (t-self.t_5) / (self.t_6-self.t_5)
 		return 0.0

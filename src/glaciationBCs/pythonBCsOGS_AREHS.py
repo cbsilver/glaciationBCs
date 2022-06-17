@@ -4,9 +4,10 @@
 
 import OpenGeoSys
 import glaciationBCs
-from glaciationBCs import glacierclass_AREHS as glc	#glacial objects
-from glaciationBCs import crustclass_AREHS as crc 	#crustal objects
-from glaciationBCs import airclass_AREHS as air		# aerial objects
+from glaciationBCs import glacierclass_AREHS as glc	# glacier
+from glaciationBCs import crustclass_AREHS as crc 	# earth crust
+from glaciationBCs import repoclass_AREHS as dgr	# repository
+from glaciationBCs import airclass_AREHS as air		# atmosphere
 
 import numpy as np
 

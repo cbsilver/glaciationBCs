@@ -11,21 +11,13 @@ from math import pi, sin, cos, sinh, cosh, sqrt, exp
 class air():
 	# class variables: owned by the class itself, shared by all instances of the class
 	pressure  = 0.e3 #Pa
-	hydrohead = 0.e3 #m
 	
-	def __init__(self, L_dom, T_north0, T_south0, T_rise, t_0, t_1, t_2=0, t_3=0, t_4=0):
+	def __init__(self, T_north0, T_south0, T_rise):
 		# instance variables
-		self.L_dom = L_dom
-		self.T_north0 = 266.15 #K = -7°C in the north (left)
-		self.T_south0 = 276.15 #K = +3°C in the south (right)
-		self.T_median = 0.5*(T_north0 + T_south0)
+		self.T_ini = 273.15 + 8.5 #K
+		self.T_min = 276.15 - 1.5 #K
 		self.T_rise = 8 #K
 		self.T_drop = 0 #K
-		self.t_0 = t_0
-		self.t_1 = t_1
-		self.t_2 = t_2
-		self.t_3 = t_3
-		self.t_4 = t_4
 
 	def temperature(self):
 		return self.T_median
