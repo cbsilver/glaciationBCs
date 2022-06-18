@@ -16,8 +16,12 @@ class crust():
 	
 	def geothermal_heatflux(self):
 		#TODO
-		return 0
+		return [0.0, 0.0, 0.0]
 		
-	def displacement_bottom(self,x,y,z,t):
+	def displacement_below(self,x,y,z,t):
 		#TODO
-		return 0.0
+		return [0.0, 0.0, 0.0]
+		
+	def displacement_aside(self,x,y,z,t):
+		#TODO
+		return [0.0, 0.0, 0.0]

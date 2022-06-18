@@ -18,5 +18,21 @@ rho_ice = 900 #kg/m³
 rho_wat =1000 #kg/m³
 T_under = 273.15 + 0.5 #K
 
+# Choose parametrization
+T_N = 266.15 #K
+T_S = 276.15 #K
+T_C = 8 #K
+Set = "TH"
+
+L_dom = 120000 #m
+L_max = 0.7*L_dom
+H_max = 200 #m
+x_0 = -0.5*L_dom
+t_0 = 0.00 #s
+t_1 = 1.0000 #s
+t_2 = 2
+t_3 = 3
+t_4 = 4
+
 # settings / set up
 # flag for 2D / 3D
