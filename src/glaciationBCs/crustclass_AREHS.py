@@ -14,7 +14,6 @@ class crust():
 		self.q_geo = q_geo
 	
 	def geothermal_heatflux(self):
-		#TODO
 		return [0.0, self.q_geo, 0.0]
 		
 	def displacement_below(self,x,y,z,t):

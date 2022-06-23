@@ -2,6 +2,7 @@
 # Physical units: kg, m, s, K
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from math import exp
 from constants_AREHS import s_a
@@ -32,9 +33,7 @@ class repo():
 		self.t_inter_HA = t_inter_HA
 		self.t_filled = t_filled
 		
-	def internal_heatsource(self,x,y,t):
-	
-		t = self.t_filled + t
+	def radioactive_heatflow(self,t):
 
 		Q_BE = lambda t: (2/3) *( (self.BE_Q[0]*np.exp(-t*self.BE_z[0])) 
 				                + (self.BE_Q[1]*np.exp(-t*self.BE_z[1])) 
@@ -94,5 +93,32 @@ class repo():
 
 		Qsum = lambda t: Qsum_BE(t) + Qsum_HA(t)
 		
-		return (Qsum_BE(t) + Qsum_HA(t)) / self.dgr_area
+		return Qsum(t) 					# heat flow = Wärmestrom
+
+	def radioactive_heatflux(self,t):	# heat flux = Wärmestromdichte!
+		# shift time to when the dgr is filled completely
+		t = self.t_filled + t
+		# TODO: remove sqrt for 3D
+		return np.sqrt(self.radioactive_heatflow(t)) / self.dgr_area
+
+
+	# auxiliary functions
+	def print_max_load(self):
+		print("Maximal heat flow from repository: ")
+		print(self.radioactive_heatflow(self.t_filled), "W")
+	
+	def plot_evolution(self):
+		time_ = np.linspace(self.t_filled , 10000*s_a, 1000)
+
+		plt.figure(figsize=(12,6))
+		plt.title('Gesamtwärmeleistung der Abfälle (RK-BE + RK-HA)\n nach vollständiger Einlagerung')
+		plt.plot(time_/s_a, self.radioactive_heatflow(time_)/1000, label='RK-BE + RK-HA stufenweise befüllt', color = 'red', lw = 2.5)
+		plt.semilogx()
+		plt.xlim(10,10000)
+		plt.ylim(0,13000)
+		plt.xlabel('Zeit [a]')
+		plt.ylabel('Leistung [kW]')
+		plt.legend(loc='upper right')
+		plt.grid(True)
+		plt.show()
 

@@ -27,20 +27,22 @@ from constants_AREHS import *
 # ---------------------------------------------------------
 class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 
-	def __init__(self, L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4):
+	def __init__(self):
 		super(BCT_SurfaceTemperature, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.air = air.air(T_ini, T_min)
-		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0)
+		self.air = air.air(T_ini, T_min, t_)
+		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
+		if plotinput:
+			self.air.plot_evolution()
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 		
-		print(self.glacier.stagecontrol(t))
+		print(self.glacier.stage_control(t))
 		
 		if x-self.glacier.x_0 > self.glacier.length(t) or self.glacier.length(t)==0.0:
 			#linear profile from north to south
-			value = self.air.temperature_profile(x,t)
+			value = self.air.temperature(t)
 		else:
 			# prescribe fixed temperature underneath the glacier body
 			value = self.glacier.temperature(x,t)
@@ -49,10 +51,13 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 
 class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 
-	def __init__(self, BE_Q, BE_z, HA_Q, HA_z, BE_vol, HA_vol, dgr_area, t_inter_BE, t_inter_HA, t_filled):
+	def __init__(self):
 		super(BCT_SourceFromRepository, self).__init__()
 		# instantiate member objects of the external geosphere
 		self.repo = dgr.repo(BE_Q, BE_z, HA_Q, HA_z, BE_vol, HA_vol, dgr_area, t_inter_BE, t_inter_HA, t_filled)
+		if plotinput:
+			self.repo.print_max_load()
+			self.repo.plot_evolution()
 
 	def getFlux(self, t, coords, primary_vars):
 		x, y, z = coords
@@ -61,13 +66,13 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		#	if y < y_min
 		
 		# get heat source term
-		value = self.repo.internal_heatsource(x,y,t)
+		value = self.repo.radioactive_heatflux(t)
 		derivative = [0.0]
 		return (value, derivative)	
 
 class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 
-	def __init__(self, L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4):
+	def __init__(self):
 		super(BCT_BottomHeatFlux, self).__init__()
 		# instantiate member objects of the external geosphere
 		self.crust = crc.crust(q_geo)
@@ -86,11 +91,11 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 # ------------------------------------------------------
 class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 
-	def __init__(self, L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4):
+	def __init__(self):
 		super(BCH_SurfacePressure, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.air = air.air(T_ini, T_min)
-		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0)
+		self.air = air.air(T_ini, T_min, t_)
+		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
@@ -108,10 +113,10 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 
 class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 
-	def __init__(self, L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4):
+	def __init__(self):
 		super(BCH_SurfaceInflux, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0)
+		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 	
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: hydraulic flux
 		x, y, z = coords
@@ -130,12 +135,13 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 # --------------------------------------------------------
 class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 	
-	def __init__(self, L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4):
+	def __init__(self):
 		super(BCM_SurfaceTraction_X, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0)
-		if plotinput: self.glacier.print_max_load()
-		if plotinput: self.glacier.plot_evolution()
+		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
+		if plotinput:
+			self.glacier.print_max_load()
+			self.glacier.plot_evolution()
 		
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		x, y, z = coords
@@ -149,10 +155,10 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 
 class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 	
-	def __init__(self, L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4):
+	def __init__(self):
 		super(BCM_SurfaceTraction_Y, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0)
+		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		x, y, z = coords
@@ -231,18 +237,18 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 # Naming convention:
 # bc_Process_(external)origin_boundary_type(_coefficient)
 
-# Cryosphere BCs
-bc_T_glacier_above_Dirichlet = BCT_SurfaceTemperature(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
-bc_H_glacier_above_Dirichlet = BCH_SurfacePressure(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
-bc_H_glacier_above_Neumann   = BCH_SurfaceInflux(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
-bc_M_glacier_above_Neumann_x = BCM_SurfaceTraction_X(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
-bc_M_glacier_above_Neumann_y = BCM_SurfaceTraction_Y(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
+# Cryosphere BCs TODO ARGUMENT LISTS OR NOT?
+bc_T_glacier_above_Dirichlet = BCT_SurfaceTemperature()
+bc_H_glacier_above_Dirichlet = BCH_SurfacePressure()
+bc_H_glacier_above_Neumann   = BCH_SurfaceInflux()
+bc_M_glacier_above_Neumann_x = BCM_SurfaceTraction_X()
+bc_M_glacier_above_Neumann_y = BCM_SurfaceTraction_Y()
 
 # Internal source
-bc_T_dgrepo_inside_VolSource = BCT_SourceFromRepository(BE_Q, BE_z, HA_Q, HA_z, BE_vol, HA_vol, dgr_area, t_inter_BE, t_inter_HA, t_filled)
+bc_T_dgrepo_inside_VolSource = BCT_SourceFromRepository()
 
 # Lithosphere BCs
-bc_T_crustal_below_Neumann_y = BCT_BottomHeatFlux(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
+bc_T_crustal_below_Neumann_y = BCT_BottomHeatFlux()
 bc_M_crustal_south_Dirichlet_x = BCM_LateralDisplacement_X()
 bc_M_crustal_south_Dirichlet_y = BCM_LateralDisplacement_Y()
 bc_M_crustal_below_Dirichlet_x = BCM_BottomDisplacement_X()

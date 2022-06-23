@@ -4,10 +4,10 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import time_control_AREHS as tcr
 
-from time_control_AREHS import *
-
-from math import pi, sin, cos, sinh, cosh, sqrt, exp
+from constants_AREHS import s_a
+from constants_AREHS import gravity
 
 class glacier():
 	# class variables: owned by the class itself, static, shared by all class instances
@@ -15,15 +15,22 @@ class glacier():
 	rho_wat =1000 #kg/m³
 	T_under = 273.15 + 0.5 #K
 	fricnum = 0.2
+	qf_melt = 6e-3 * 1 / s_a # = 6mm/a
 	
 	# constructor
-	def __init__(self, L_dom, L_max, H_max, x_0):
+	def __init__(self, L_dom, L_max, H_max, x_0, t_):
 		# instance variables
 		self.L_dom = L_dom
 		self.L_max = L_max
 		self.H_max = H_max
 		self.x_0 = x_0
-
+		self.t_ = t_
+		
+		H_ = [0.0, 0.0, 0.0, 0.0, H_max, H_max, 0.0]
+		L_ = [0.0, 0.0, 0.0, 0.0, L_max, L_max, 0.0]
+		self.tcr_h = tcr.time_control(t_, H_)
+		self.tcr_l = tcr.time_control(t_, L_)
+		
 	def normalstress(self, x, t):
 		return -self.rho_ice * gravity * self.local_height(x,t)
 		
@@ -53,29 +60,27 @@ class glacier():
 
 	# piecewise linear laws for the evolution of the glacier's dimensions
 	def height(self, t):
-
-		return self.H_max * time_factor_glacier(t)
+		return self.tcr_h.function_value(t)
 
 	def length(self, t):
-
-		return self.L_max * time_factor_glacier(t)
+		return self.tcr_l.function_value(t)
 
 	# analytical function for the glacier meltwater production
 	def local_meltwater(self,x,t):
 		# constant flux at a temperate glacier base
-		q = 6e-3 * 1 / s_a # = 6mm/a
+		q = qf_melt
 		# constant flux at a frozen glacier base
 		q = 0.0
 		
 		return q
 
 	# auxiliary functions
-	def print_max_load(self,t_peak):
+	def print_max_load(self):
 		print("Maximal normal stress due to glacier load: ")
-		print(self.normalstress(0,t_peak)/1e6, "MPa")
+		print(self.normalstress(0,self.t_[5])/1e6, "MPa")
 		
 	def plot_evolution(self):
-		tRange = np.linspace(self.t_1,self.t_0,11)
+		tRange = np.linspace(self.t_[6],self.t_[0],11)
 		fig,ax = plt.subplots()
 		ax.set_title('Glacier evolution') #'Gletschervorschub'
 		for t in tRange:
@@ -84,8 +89,8 @@ class glacier():
 			for x in xRange:
 				y = self.local_height(x,t)	
 				yRange = np.append(yRange,y)
-			ax.plot(xRange,yRange,label='t=$%.2f $ ' %t)
-			ax.fill_between(xRange, 0, yRange)
+			ax.plot(xRange,yRange,label='t=$%.2f $ ' %(t/s_a))
+			#ax.fill_between(xRange, 0, yRange)
 		ax.set_xlabel('$x$ / m')
 		ax.set_ylabel('height / m')
 		ax.grid()

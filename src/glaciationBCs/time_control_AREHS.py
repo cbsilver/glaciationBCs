@@ -24,19 +24,16 @@ class time_control():
     }
 	
 	# constructor
-	def __init__(self, t_0, t_1, t_2, t_3, t_4, t_5, t_6):
-		# instance variables
-		self.t_0 = t_0; #print("t0 = ", t_0)
-		self.t_1 = t_1; #print("t1 = ", t_1)
-		self.t_2 = t_2; #print("t2 = ", t_2)
-		self.t_3 = t_3; #print("t3 = ", t_3)
-		self.t_4 = t_4; #print("t4 = ", t_4)
-		self.t_5 = t_5; #print("t5 = ", t_5)
-		self.t_6 = t_6; #print("t6 = ", t_6)
-		
-	# def time modulation
+	def __init__(self, t_, f_):
+		# instance variables	
+		self.t_ = t_
+		self.f_ = f_
 
-	def stagecontrol(self, t):
+	def time_modulation(self, t):
+		# TODO
+		return t
+
+	def stage_control(self, t):
 		print("t = ", t)
 		if (     0.0 < t <= self.t_0):
 			return stages[0]
@@ -54,28 +51,28 @@ class time_control():
 			return stages[6]
 		return "undefined stage"
 	
-	# TODO virtual method time_factor, to be overload by glacierclass and airclass
+	def linear_function(self, t, t_S, t_E, f_S, f_E):
+		
+		if (f_E==f_S):
+			return f_S
+		else:
+			Df = f_E - f_S
+			Dt = t_E - t_S
+			return Df/Dt * (t-t_S) + f_S
 	
-	# to multiply with process variable
-	def time_factor_glacier(self, t):
-		if (     0.0 < t <= self.t_3):
-			return 0.0
-		if (self.t_3 < t <= self.t_4):
-			return (t-self.t_3) / (self.t_4-self.t_3)
-		if (self.t_4 < t <= self.t_5):
-			return 1.0
-		if (self.t_5 < t <= self.t_6):
-			return 1 - (t-self.t_5) / (self.t_6-self.t_5)
-		return 0.0
+	def function_value(self, t):
+		# TODO for loop over all stages
+		if (self.t_[0] <= t <= self.t_[1]):
+			return self.linear_function(t, self.t_[0], self.t_[1], self.f_[0], self.f_[1])
+		if (self.t_[1] <  t <= self.t_[2]):
+			return self.linear_function(t, self.t_[1], self.t_[2], self.f_[1], self.f_[2])
+		if (self.t_[2] <  t <= self.t_[3]):
+			return self.linear_function(t, self.t_[2], self.t_[3], self.f_[2], self.f_[3])
+		if (self.t_[3] <  t <= self.t_[4]):
+			return self.linear_function(t, self.t_[3], self.t_[4], self.f_[3], self.f_[4])
+		if (self.t_[4] <  t <= self.t_[5]):
+			return self.linear_function(t, self.t_[4], self.t_[5], self.f_[4], self.f_[5])
+		if (self.t_[5] <  t <= self.t_[6]):
+			return self.linear_function(t, self.t_[5], self.t_[6], self.f_[5], self.f_[6])
+		
 
-	# to multiply with process variable TODO
-	def time_factor_air(self, t):
-		if (     0.0 < t <= self.t_1):
-			return 1.0
-		if (self.t_1 < t <= self.t_2):
-			return 1 - (t-self.t_1) / (self.t_2-self.t_1)
-		if (self.t_2 < t <= self.t_5):
-			return 1.0
-		if (self.t_5 < t <= self.t_6):
-			return (t-self.t_5) / (self.t_6-self.t_5)
-		return 0.0
