@@ -4,9 +4,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 
-from glaciationBCs import constants_AREHS
+from time_control_AREHS import *
 
 from math import pi, sin, cos, sinh, cosh, sqrt, exp
 
@@ -15,6 +14,7 @@ class glacier():
 	rho_ice = 900 #kg/m³
 	rho_wat =1000 #kg/m³
 	T_under = 273.15 + 0.5 #K
+	fricnum = 0.2
 	
 	# constructor
 	def __init__(self, L_dom, L_max, H_max, x_0):
@@ -28,7 +28,7 @@ class glacier():
 		return -self.rho_ice * gravity * self.local_height(x,t)
 		
 	def tangentialstress(self, x, t):
-		return fricnum * self.normalstress(x, t)	
+		return self.fricnum * self.normalstress(x, t)	
 
 	def pressure(self, x, t):
 		return -self.normalstress(x,t) 
@@ -37,7 +37,7 @@ class glacier():
 		return self.T_under
     
 	# analytical function for the glacier's shape
-	def local_height(self,x,y,z,t):
+	def local_height(self,x,t):
 		# TODO coords = swap(coords) # y->x, z->y
 	
 		l = self.length(t)
@@ -70,9 +70,9 @@ class glacier():
 		return q
 
 	# auxiliary functions
-	def print_max_load(self):
+	def print_max_load(self,t_peak):
 		print("Maximal normal stress due to glacier load: ")
-		print(self.normalstress(0,self.t_1)/1e6, "MPa")
+		print(self.normalstress(0,t_peak)/1e6, "MPa")
 		
 	def plot_evolution(self):
 		tRange = np.linspace(self.t_1,self.t_0,11)

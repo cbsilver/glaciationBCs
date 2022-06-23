@@ -1,22 +1,21 @@
 # Data model of the evolving crust (thermal and mechanical farfield)
 # Physical units: kg, m, s, K
 
-import copy as cp
 import numpy as np
-import matplotlib.pyplot as plt
-import functools
+
+#from constants_AREHS import *
 
 class crust():
 	# class variables:
 		
 	# constructor
-	def __init__(self):
+	def __init__(self, q_geo):
 		# instance variables: owned by instances of the class, can be different for each instance
-		self.q_geo = 0.05
+		self.q_geo = q_geo
 	
 	def geothermal_heatflux(self):
 		#TODO
-		return [0.0, 0.0, 0.0]
+		return [0.0, self.q_geo, 0.0]
 		
 	def displacement_below(self,x,y,z,t):
 		#TODO

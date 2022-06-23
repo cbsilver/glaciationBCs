@@ -45,11 +45,11 @@ if (Set=="HM"): # units: kg, m, s, K
 	L_max = 575000 #m
 	H_max = 3200 #m
 	x_0 = 0.0 #m
-	t_0 = 0.0 * 32500 * s_a #a
-	t_1 = t_0 + 12500 * s_a #a
-	t_2 = t_1 +  5000 * s_a #a
-	t_3 = t_2 +  5000 * s_a #a
-	t_4 = t_3 + 10000 * s_a #a 
+	t_0 = 0.0 * 32500 * s_a #s
+	t_1 = t_0 + 12500 * s_a #s
+	t_2 = t_1 +  5000 * s_a #s
+	t_3 = t_2 +  5000 * s_a #s
+	t_4 = t_3 + 10000 * s_a #s 
 
 if (Set=="TH"): # units: kg, m, a, K
 	L_dom = 1150000 #m
