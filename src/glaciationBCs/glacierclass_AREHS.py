@@ -95,6 +95,7 @@ class glacier():
 		ax.set_ylabel('height / m')
 		ax.grid()
 		fig.legend()
-		plt.show()
+		fig.savefig("glacier_test.png")
+		# plt.show()
 	
 

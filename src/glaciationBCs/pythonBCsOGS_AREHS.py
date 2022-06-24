@@ -54,7 +54,8 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 	def __init__(self):
 		super(BCT_SourceFromRepository, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.repo = dgr.repo(BE_Q, BE_z, HA_Q, HA_z, BE_vol, HA_vol, dgr_area, t_inter_BE, t_inter_HA, t_filled)
+		self.repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol, 
+							 dgr_area, t_inter_BE, t_inter_HA, t_filled)
 		if plotinput:
 			self.repo.print_max_load()
 			self.repo.plot_evolution()
