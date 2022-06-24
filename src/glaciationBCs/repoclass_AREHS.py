@@ -48,6 +48,8 @@ class repo():
 				                + (self.HA_Q[3]*np.exp(-t*self.HA_z[3])) 
 				                + (self.HA_Q[4]*np.exp(-t*self.HA_z[4])) ) * self.HA_vol
 
+        #test
+
 		# stepwise filling of RK-BE
 		Qsum_BE= lambda t:(0.05*Q_BE(t + self.t_inter_BE)   
 				        + 0.05*Q_BE(t-4*s_a  + self.t_inter_BE)
