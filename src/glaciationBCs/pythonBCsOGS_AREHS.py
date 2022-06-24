@@ -143,6 +143,7 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 		if plotinput:
 			self.glacier.print_max_load()
 			self.glacier.plot_evolution()
+			self.glacier.plot_evolving_shape()
 		
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		x, y, z = coords
@@ -238,7 +239,7 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 # Naming convention:
 # bc_Process_(external)origin_boundary_type(_coefficient)
 
-# Cryosphere BCs TODO ARGUMENT LISTS OR NOT?
+# Cryosphere BCs
 bc_T_glacier_above_Dirichlet = BCT_SurfaceTemperature()
 bc_H_glacier_above_Dirichlet = BCH_SurfacePressure()
 bc_H_glacier_above_Neumann   = BCH_SurfaceInflux()

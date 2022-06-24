@@ -77,9 +77,9 @@ class glacier():
 	# auxiliary functions
 	def print_max_load(self):
 		print("Maximal normal stress due to glacier load: ")
-		print(self.normalstress(0,self.t_[5])/1e6, "MPa")
+		print(self.normalstress(self.x_0,self.t_[5])/1e6, "MPa")
 		
-	def plot_evolution(self):
+	def plot_evolving_shape(self):
 		tRange = np.linspace(self.t_[6],self.t_[0],11)
 		fig,ax = plt.subplots()
 		ax.set_title('Glacier evolution') #'Gletschervorschub'
@@ -95,7 +95,10 @@ class glacier():
 		ax.set_ylabel('height / m')
 		ax.grid()
 		fig.legend()
-		fig.savefig("glacier_test.png")
-		# plt.show()
+		# fig.savefig("glacier_test.png")
+		plt.show()
 	
+	def plot_evolution(self):
+		self.tcr_h.plot_evolution()
+		self.tcr_l.plot_evolution()
 

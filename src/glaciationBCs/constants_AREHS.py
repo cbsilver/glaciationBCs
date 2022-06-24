@@ -64,4 +64,4 @@ t_filled = 80*s_a
 
 # settings / set up
 # flag for 2D / 3D
-plotinput = 1
+plotinput = False

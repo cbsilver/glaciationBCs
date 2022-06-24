@@ -2,7 +2,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
+
+from constants_AREHS import s_a
 
 class time_control():
 	# class variables: owned by the class itself, static, shared by all class instances
@@ -75,4 +76,16 @@ class time_control():
 		if (self.t_[5] <  t <= self.t_[6]):
 			return self.linear_function(t, self.t_[5], self.t_[6], self.f_[5], self.f_[6])
 		
-
+	def plot_evolution(self):
+		tRange = np.linspace(self.t_[0],self.t_[6],20)
+		fRange = np.empty(shape=[0])
+		for t in tRange:
+			f = self.function_value(t)	
+			fRange = np.append(fRange,f)
+		fig,ax = plt.subplots()
+		ax.set_title('Temporal evolution')
+		ax.plot(tRange / s_a, fRange)
+		ax.scatter(np.array(self.t_) / s_a, np.array(self.f_))
+		ax.set_xlabel('$t$ / years')
+		ax.grid()
+		plt.show()

@@ -49,7 +49,7 @@ class repo():
 		# shift time to when the dgr is filled completely
 		t = self.t_filled + t
 		# TODO: remove sqrt for 3D
-		return np.sqrt(self.radioactive_heatflow(t)) / self.dgr_area
+		return np.sqrt(self.radioactive_heatflow(t)) / self.dgr_area #TODO line start and endpoint
 
 
 	# auxiliary functions

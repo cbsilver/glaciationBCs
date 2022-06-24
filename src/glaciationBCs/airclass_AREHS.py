@@ -26,17 +26,4 @@ class air():
 		return self.tcr.function_value(t)
 		
 	def plot_evolution(self):
-		tRange = np.linspace(self.t_[0],self.t_[6],20)
-		fRange = np.empty(shape=[0])
-		#fRange = self.temperature(tRange)
-		for t in tRange:
-			f = self.temperature(t)	
-			fRange = np.append(fRange,f)
-		fig,ax = plt.subplots()
-		ax.set_title('Temporal evolution')
-		ax.plot(tRange / s_a, fRange)
-		ax.scatter(tRange / s_a,fRange)
-		ax.set_xlabel('$t$ / years')
-		ax.set_ylabel('temperatur / m')
-		ax.grid()
-		plt.show()
+		self.tcr.plot_evolution()
