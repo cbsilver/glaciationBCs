@@ -38,7 +38,7 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 		
-		print(self.glacier.stage_control(t))
+		print(self.air.tcr.stage_control(t))
 		
 		if x-self.glacier.x_0 > self.glacier.length(t) or self.glacier.length(t)==0.0:
 			#linear profile from north to south
@@ -49,13 +49,27 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 		
 		return (True, value)
 
+class BCT_SurfaceTemperature_const(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCT_SurfaceTemperature_const, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.air = air.air(T_ini, T_min, t_)
+
+	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
+		x, y, z = coords
+		
+		value = 2*self.air.T_ini
+		
+		return (True, value)
+
 class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 
 	def __init__(self):
 		super(BCT_SourceFromRepository, self).__init__()
 		# instantiate member objects of the external geosphere
 		self.repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol, 
-							 dgr_area, t_inter_BE, t_inter_HA, t_filled)
+							 lrepo, t_inter_BE, t_inter_HA, t_filled)
 		if plotinput:
 			self.repo.print_max_load()
 			self.repo.plot_evolution()
@@ -63,11 +77,11 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 	def getFlux(self, t, coords, primary_vars):
 		x, y, z = coords
 		
-		#if x < x_min:
-		#	if y < y_min
+		value = 0
+		if ((xrmin <= x <= xrmax) and (yrmin <= y <= yrmax)):
+			#print("y = ",y)
+			value = self.repo.radioactive_heatflux(t)
 		
-		# get heat source term
-		value = self.repo.radioactive_heatflux(t)
 		derivative = [0.0]
 		return (value, derivative)	
 
@@ -238,6 +252,9 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 # ---------------------------------------------
 # Naming convention:
 # bc_Process_(external)origin_boundary_type(_coefficient)
+
+# Atmosphere BCs
+bc_T_atmosph_above_Dirichlet = BCT_SurfaceTemperature_const()
 
 # Cryosphere BCs
 bc_T_glacier_above_Dirichlet = BCT_SurfaceTemperature()

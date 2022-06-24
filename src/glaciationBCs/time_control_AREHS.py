@@ -7,6 +7,7 @@ from constants_AREHS import s_a
 
 class time_control():
 	# class variables: owned by the class itself, static, shared by all class instances
+	# TODO remove initialization phase
 	stages = {
 	# t0->t1
 	0 : "initialization phase", # for steady state / equilibrium geothermal heat flux
@@ -17,7 +18,7 @@ class time_control():
 	# t3->t4
     3 : "glacier advance",
     # t4->t5
-    5 : "glacier dormancy",
+    4 : "glacier dormancy",
     # t4->t5
     5 : "glacier retreat",
     # t5->t6
@@ -36,24 +37,23 @@ class time_control():
 
 	def stage_control(self, t):
 		print("t = ", t)
-		if (     0.0 < t <= self.t_0):
-			return stages[0]
-		if (self.t_0 < t <= self.t_1):
-			return stages[1]
-		if (self.t_1 < t <= self.t_2):
-			return stages[2]
-		if (self.t_2 < t <= self.t_3):
-			return stages[3]
-		if (self.t_3 < t <= self.t_4):
-			return stages[4]
-		if (self.t_4 < t <= self.t_5):
-			return stages[5]
-		if (self.t_5 < t <= self.t_6):
-			return stages[6]
+		if (     0.0 < t <= self.t_[0]):
+			return self.stages[0]
+		if (self.t_[0] < t <= self.t_[1]):
+			return self.stages[1]
+		if (self.t_[1] < t <= self.t_[2]):
+			return self.stages[2]
+		if (self.t_[2] < t <= self.t_[3]):
+			return self.stages[3]
+		if (self.t_[3] < t <= self.t_[4]):
+			return self.stages[4]
+		if (self.t_[4] < t <= self.t_[5]):
+			return self.stages[5]
+		if (self.t_[5] < t <= self.t_[6]):
+			return self.stages[6]
 		return "undefined stage"
 	
 	def linear_function(self, t, t_S, t_E, f_S, f_E):
-		
 		if (f_E==f_S):
 			return f_S
 		else:

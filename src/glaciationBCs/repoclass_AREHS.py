@@ -35,7 +35,7 @@ class repo():
 		self.t_inter_HA = t_inter_HA
 		self.t_filled = t_filled
 		
-	def radioactive_heatflow(self,t):
+	def radioactive_heatflow(self,t): # heat flow = Wärmestrom
 
 		Q_BE = lambda t: np.sum([self.BE_Q[i]*np.exp(-t*self.BE_z[i]) for i in range(5)]) 
 		Q_HA = lambda t: np.sum([self.HA_Q[i]*np.exp(-t*self.HA_z[i]) for i in range(5)]) 
@@ -43,9 +43,9 @@ class repo():
 		Qsum_BE = np.sum([Q_BE(t-i*s_a + self.t_inter_BE) for i in range(0,80,4)])
 		Qsum_HA = np.sum([Q_HA(t-i*s_a + self.t_inter_HA) for i in range(0,80,4)])
 		
-		return Qsum_BE*self.BE_vol*self.BE_f + Qsum_HA*self.HA_vol*self.HA_f # heat flow = Wärmestrom
+		return Qsum_BE*self.BE_vol*self.BE_f + Qsum_HA*self.HA_vol*self.HA_f
 
-	def radioactive_heatflux(self,t):	# heat flux = Wärmestromdichte!
+	def radioactive_heatflux(self,t): # heat flux = Wärmestromdichte!
 		# shift time to when the dgr is filled completely
 		t = self.t_filled + t
 		# TODO: remove sqrt for 3D
