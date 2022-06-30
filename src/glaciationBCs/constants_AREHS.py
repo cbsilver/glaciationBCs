@@ -18,11 +18,11 @@ x_max = 20950		 #m
 lrepo = 3000		 #m / m²
 xrmin = (x_max+x_min)/2 - lrepo/2
 xrmax = (x_max+x_min)/2 + lrepo/2
-yrmin = -1270
-yrmax = -1250
+yrmin = -1270 - 320/2.
+yrmax = -1250 + 320/2.
 
 L_dom = x_max - x_min#m
-L_max = 0.8* L_dom	 #m
+L_max = 0.8 * L_dom	 #m
 H_max = 700			 #m
 x_0 = x_min 		 #m
 

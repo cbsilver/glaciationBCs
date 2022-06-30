@@ -21,6 +21,7 @@ from constants_AREHS import *
 # H			pressure		hydraulic flux
 # M			displacement	momentum flux (stress vector)
 
+#TODO linear distribution for T gradient and p gradient at left boundary
 
 # ---------------------------------------------------------
 # Thermal BCs
@@ -59,7 +60,7 @@ class BCT_SurfaceTemperature_const(OpenGeoSys.BoundaryCondition):
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 		
-		value = 2*self.air.T_ini
+		value = self.air.T_ini
 		
 		return (True, value)
 
@@ -79,7 +80,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		
 		value = 0
 		if ((xrmin <= x <= xrmax) and (yrmin <= y <= yrmax)):
-			#print("y = ",y)
+			print("y = ",y)
 			value = self.repo.radioactive_heatflux(t)
 		
 		derivative = [0.0]
