@@ -4,9 +4,9 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import time_control_AREHS as tcr
 
-from constants_AREHS import s_a
+from glaciationBCs import time_control_AREHS as tcr
+from glaciationBCs.constants_AREHS import s_a
 
 class air():
 	# class variables: owned by the class itself, shared by all instances of the class

@@ -2,16 +2,20 @@
 # BCs reflect the external geosphere: cryo-, litho- and atmosphere
 # Physical units: depending on parameter set, see below!
 
-import OpenGeoSys
-#import glaciationBCs
-import glacierclass_AREHS as glc	# glacier
-import crustclass_AREHS as crc 	# earth crust
-import repoclass_AREHS as dgr	# repository
-import airclass_AREHS as air		# atmosphere
+import sys
+print(sys.version)
+
+import matplotlib
+from glaciationBCs import glacierclass_AREHS as glc	# glacier
+from glaciationBCs import crustclass_AREHS as crc 	# earth crust
+from glaciationBCs import repoclass_AREHS as dgr	# repository
+from glaciationBCs import airclass_AREHS as air		# atmosphere
 
 import numpy as np
 
-from constants_AREHS import *
+
+import OpenGeoSys
+from glaciationBCs.constants_AREHS import *
 
 # Nomenclature: BC Process_LocationQuantity_Component
 # 					(THM)			(XYZ)
