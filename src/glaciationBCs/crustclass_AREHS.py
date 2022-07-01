@@ -3,7 +3,7 @@
 
 import numpy as np
 
-#from constants_AREHS import *
+#from glaciationBCs.constants_AREHS import gravity
 
 class crust():
 	# class variables:

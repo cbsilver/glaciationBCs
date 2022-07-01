@@ -6,8 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from glaciationBCs import time_control_AREHS as tcr
 
-from glaciationBCs.constants_AREHS import *
-#from constants_AREHS import gravity
+from glaciationBCs.constants_AREHS import gravity
+from glaciationBCs.constants_AREHS import s_a
 
 class glacier():
 	# class variables: owned by the class itself, static, shared by all class instances
