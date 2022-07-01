@@ -4,10 +4,10 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import time_control_AREHS as tcr
+from glaciationBCs import time_control_AREHS as tcr
 
-from constants_AREHS import s_a
-from constants_AREHS import gravity
+from glaciationBCs.constants_AREHS import *
+#from constants_AREHS import gravity
 
 class glacier():
 	# class variables: owned by the class itself, static, shared by all class instances

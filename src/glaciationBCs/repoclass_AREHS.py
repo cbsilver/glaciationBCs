@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from math import exp
-from constants_AREHS import s_a
+from glaciationBCs.constants_AREHS import s_a
 
 class repo():
 	# class variables:
