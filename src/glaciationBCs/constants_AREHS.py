@@ -15,6 +15,9 @@ T_min = 273.15 - 1.5 #K
 # Geomodel-specific
 x_min = 9000		 #m
 x_max = 20950		 #m
+y_min =-1000		 #m
+y_max = 0.0			 #m
+
 lrepo = 3000		 #m / m²
 xrmin = (x_max+x_min)/2 - lrepo/2
 xrmax = (x_max+x_min)/2 + lrepo/2
