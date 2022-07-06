@@ -34,5 +34,5 @@ class crust():
 
 	def hydrostatic_pressure(self,x,y,z,t):
 		# linear profile according to gravity
-		p_pore = self.rho_wat * gravity * (y - y_max)
+		p_pore = self.rho_wat * gravity * (y_max - y)
 		return p_pore

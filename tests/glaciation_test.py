@@ -58,7 +58,7 @@ if (Set=="HM"): # units: kg, m, s, K
 	t_4 = t_3 + 10000 * s_a #a
 	
 glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
-importlib.reload(glaciationBCs)
+#importlib.reload(glaciationBCs)
 importlib.reload(glc)
 glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
 

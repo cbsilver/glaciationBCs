@@ -102,7 +102,7 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 		
 		# get heat flux component
 		value = self.crust.geothermal_heatflux()[1]
-		derivative = [0.0]
+		derivative = [0.0, 0.0]
 		return (True, value, derivative)	
 
 
@@ -120,7 +120,7 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 
-		print(self.glacier.stagecontrol(t))
+		print(self.glacier.tcr_h.stage_control(t))
 		
 		if x-self.glacier.x_0 <= self.glacier.length(t):
 			# height dependent pressure from glacier
@@ -148,6 +148,26 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 			return (True, value, derivative)
 		# no BC => free boundary then (no flux)
 		return (False, 0.0, [ 0.0, 0.0 ])
+
+class BCH_VerticalPressure(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCH_VerticalPressure, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.air = air.air(T_ini, T_min, t_)
+		self.crust = crc.crust(q_geo)
+
+	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
+		x, y, z = coords
+
+		# height dependent pressure from the crust
+		p_pore = self.crust.hydrostatic_pressure(x,y,z,t)
+		# fixed pressure from ambient air
+		p_atmo = self.air.pressure
+
+		value = p_pore + p_atmo
+
+		return (True, value)
 
 
 # --------------------------------------------------------
@@ -273,6 +293,7 @@ bc_T_dgrepo_inside_VolSource = BCT_SourceFromRepository()
 
 # Lithosphere BCs
 bc_T_crustal_below_Neumann_y = BCT_BottomHeatFlux()
+bc_H_crustal_aside_Dirichlet = BCH_VerticalPressure()
 bc_M_crustal_south_Dirichlet_x = BCM_LateralDisplacement_X()
 bc_M_crustal_south_Dirichlet_y = BCM_LateralDisplacement_Y()
 bc_M_crustal_below_Dirichlet_x = BCM_BottomDisplacement_X()
