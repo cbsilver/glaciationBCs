@@ -5,6 +5,9 @@ import numpy as np
 
 from glaciationBCs.constants_AREHS import gravity
 from glaciationBCs.constants_AREHS import y_max # TODO
+from glaciationBCs.constants_AREHS import y_min # TODO
+from glaciationBCs.constants_AREHS import T_bot # TODO
+from glaciationBCs.constants_AREHS import T_ini # TODO
 
 
 class crust():
@@ -27,8 +30,12 @@ class crust():
 		#TODO
 		return [0.0, 0.0, 0.0]
 
-	def geothermal_temperature(self,x,y,z,t):
-		#TODO linear profile according to geothermal heatflux
+	def geothermal_temperature(self,x,y,z,t,T_top):
+		# linear profile according to geothermal heatflux
+		DT = T_bot - T_top
+		Dy = (y_min - y_max)
+		return DT/Dy * (y - y_max) + T_ini
+		
 		T_crust = 0
 		return T_crust
 

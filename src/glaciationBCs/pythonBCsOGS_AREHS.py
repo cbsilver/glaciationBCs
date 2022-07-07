@@ -45,7 +45,7 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 		
 		print(self.air.tcr.stage_control(t))
 		
-		if x-self.glacier.x_0 > self.glacier.length(t) or self.glacier.length(t)==0.0:
+		if x-self.glacier.x_0 > self.glacier.length(t) or self.glacier.length(t)==0.0: #TODO that's right!
 			#linear profile from north to south
 			value = self.air.temperature(t)
 		else:
@@ -54,10 +54,10 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 		
 		return (True, value)
 
-class BCT_SurfaceTemperature_const(OpenGeoSys.BoundaryCondition):
+class BCT_InitialTemperature(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
-		super(BCT_SurfaceTemperature_const, self).__init__()
+		super(BCT_InitialTemperature, self).__init__()
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 
@@ -83,7 +83,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		x, y, z = coords
 		
 		value = 0
-		if ((xrmin <= x <= xrmax) and (yrmin <= y <= yrmax)):
+		if ((xrmin <= x <= xrmax) and (yrmin <= y <= yrmax)): #TODO
 			print("y = ",y)
 			value = self.repo.radioactive_heatflux(t)
 		
@@ -105,6 +105,23 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 		derivative = [0.0, 0.0]
 		return (True, value, derivative)	
 
+class BCT_VerticalGradient(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCT_VerticalGradient, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.air = air.air(T_ini, T_min, t_)
+		self.crust = crc.crust(q_geo)
+
+	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
+		x, y, z = coords
+
+		# evolving surface temperature
+		T_top = self.air.temperature(t)
+		# vertical geothermal gradient
+		value = self.crust.geothermal_temperature(x,y,z,t,T_top)
+
+		return (True, value)
 
 # ------------------------------------------------------
 # Hydraulic BCs
@@ -122,7 +139,8 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 
 		print(self.glacier.tcr_h.stage_control(t))
 		
-		if x-self.glacier.x_0 <= self.glacier.length(t):
+		l_glacier = self.glacier.length(t)
+		if x - self.glacier.x_0 <= l_glacier and l_glacier > 0: #TODO
 			# height dependent pressure from glacier
 			value = self.glacier.pressure(x,t)
 		else:
@@ -141,7 +159,7 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: hydraulic flux
 		x, y, z = coords
 		
-		if x-self.glacier.x_0 <= self.glacier.length(t):
+		if x - self.glacier.x_0 <= self.glacier.length(t): #TODO
 			# get hydraulic flux under glacier
 			value = self.glacier.local_meltwater(x,t)
 			derivative = [ 0.0, 0.0 ]
@@ -149,10 +167,10 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 		# no BC => free boundary then (no flux)
 		return (False, 0.0, [ 0.0, 0.0 ])
 
-class BCH_VerticalPressure(OpenGeoSys.BoundaryCondition):
+class BCH_VerticalGradient(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
-		super(BCH_VerticalPressure, self).__init__()
+		super(BCH_VerticalGradient, self).__init__()
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 		self.crust = crc.crust(q_geo)
@@ -187,7 +205,7 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		x, y, z = coords
 		
-		if x-self.glacier.x_0 <= self.glacier.length(t):
+		if x - self.glacier.x_0 <= self.glacier.length(t): #TODO?
 			value = self.glacier.tangentialstress(x,t)
 			derivative = [ 0.0, 0.0 ]
 			return (True, value, derivative)
@@ -204,7 +222,7 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		x, y, z = coords
 		
-		if x-self.glacier.x_0 <= self.glacier.length(t):
+		if x - self.glacier.x_0 <= self.glacier.length(t): #TODO?
 			value = self.glacier.normalstress(x,t)
 			derivative = [ 0.0, 0.0,   ]
 			return (True, value, derivative)
@@ -279,7 +297,7 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 # bc_Process_(external)origin_boundary_type(_coefficient)
 
 # Atmosphere BCs
-bc_T_atmosph_above_Dirichlet = BCT_SurfaceTemperature_const()
+bc_T_atmosph_above_Dirichlet = BCT_InitialTemperature()
 
 # Cryosphere BCs
 bc_T_glacier_above_Dirichlet = BCT_SurfaceTemperature()
@@ -293,7 +311,8 @@ bc_T_dgrepo_inside_VolSource = BCT_SourceFromRepository()
 
 # Lithosphere BCs
 bc_T_crustal_below_Neumann_y = BCT_BottomHeatFlux()
-bc_H_crustal_aside_Dirichlet = BCH_VerticalPressure()
+bc_T_crustal_aside_Dirichlet = BCT_VerticalGradient()
+bc_H_crustal_aside_Dirichlet = BCH_VerticalGradient()
 bc_M_crustal_south_Dirichlet_x = BCM_LateralDisplacement_X()
 bc_M_crustal_south_Dirichlet_y = BCM_LateralDisplacement_Y()
 bc_M_crustal_below_Dirichlet_x = BCM_BottomDisplacement_X()

@@ -10,7 +10,7 @@ from glaciationBCs.constants_AREHS import s_a
 
 class air():
 	# class variables: owned by the class itself, shared by all instances of the class
-	pressure  = 0.e3 #Pa
+	pressure  = 1.e5 #Pa
 	
 	def __init__(self, T_ini, T_min, t_):
 		# instance variables
