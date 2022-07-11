@@ -16,8 +16,8 @@ T_bot = 380.30       #k
 # Geomodel-specific
 x_min = 9000		 #m
 x_max = 20950		 #m
-y_min =-1000		 #m
-y_max = 85			 #m
+y_min =-2216.03		 #m
+y_max = 67.0103		 #m
 
 lrepo = 3000		 #m / m²
 xrmin = (x_max+x_min)/2 - lrepo/2
