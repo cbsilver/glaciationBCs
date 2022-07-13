@@ -30,6 +30,20 @@ from glaciationBCs.constants_AREHS import *
 # ---------------------------------------------------------
 # Thermal BCs
 # ---------------------------------------------------------
+class BCT_InitialTemperature(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCT_InitialTemperature, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.air = air.air(T_ini, T_min, t_)
+
+	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
+		x, y, z = coords
+
+		value = self.air.T_ini
+
+		return (True, value)
+
 class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
@@ -57,20 +71,6 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 		else:
 			#linear profile from north to south
 			value = self.air.temperature(t)
-		
-		return (True, value)
-
-class BCT_InitialTemperature(OpenGeoSys.BoundaryCondition):
-
-	def __init__(self):
-		super(BCT_InitialTemperature, self).__init__()
-		# instantiate member objects of the external geosphere
-		self.air = air.air(T_ini, T_min, t_)
-
-	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
-		
-		value = self.air.T_ini
 		
 		return (True, value)
 
@@ -132,6 +132,21 @@ class BCT_VerticalGradient(OpenGeoSys.BoundaryCondition):
 # ------------------------------------------------------
 # Hydraulic BCs
 # ------------------------------------------------------
+class BCH_InitialPressure(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCH_InitialPressure, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.air = air.air(T_ini, T_min, t_)
+
+	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
+		x, y, z = coords
+
+		value = self.air.pressure
+
+		return (True, value)
+
+
 class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
@@ -307,6 +322,7 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 
 # Atmosphere BCs
 bc_T_atmosph_above_Dirichlet = BCT_InitialTemperature()
+bc_H_atmosph_above_Dirichlet = BCH_InitialPressure()
 
 # Cryosphere BCs
 bc_T_glacier_above_Dirichlet = BCT_SurfaceTemperature()
@@ -322,8 +338,8 @@ bc_T_dgrepo_inside_VolSource = BCT_SourceFromRepository()
 bc_T_crustal_below_Neumann_y = BCT_BottomHeatFlux()
 bc_T_crustal_aside_Dirichlet = BCT_VerticalGradient()
 bc_H_crustal_aside_Dirichlet = BCH_VerticalGradient()
-bc_M_crustal_south_Dirichlet_x = BCM_LateralDisplacement_X()
-bc_M_crustal_south_Dirichlet_y = BCM_LateralDisplacement_Y()
+bc_M_crustal_aside_Dirichlet_x = BCM_LateralDisplacement_X()
+bc_M_crustal_aside_Dirichlet_y = BCM_LateralDisplacement_Y()
 bc_M_crustal_below_Dirichlet_x = BCM_BottomDisplacement_X()
 bc_M_crustal_below_Dirichlet_y = BCM_BottomDisplacement_Y()
 #bc_M_crustal_north
