@@ -93,7 +93,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 			print("y = ",y)
 			value = self.repo.radioactive_heatflux(t)
 		
-		derivative = [0.0]
+		derivative = [0.0] * len(primary_vars)
 		return (value, derivative)	
 
 class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
@@ -108,7 +108,10 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 		
 		# get heat flux component
 		value = self.crust.geothermal_heatflux()[1]
-		derivative = [0.0, 0.0]
+		
+		#derivative = np.zero(length(primary_vars))
+		
+		derivative = [0.0] * len(primary_vars)
 		return (True, value, derivative)	
 
 class BCT_VerticalGradient(OpenGeoSys.BoundaryCondition):
@@ -179,15 +182,16 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 	
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: hydraulic flux
 		x, y, z = coords
-		
+
+		derivative = [0.0] * len(primary_vars)
+
 		under_glacier = x-self.glacier.x_0 <= self.glacier.length(t) > 0
 		if under_glacier:
 			# get hydraulic flux under glacier
 			value = self.glacier.local_meltwater(x,t)
-			derivative = [ 0.0, 0.0 ]
 			return (True, value, derivative)
 		# no BC => free boundary then (no flux)
-		return (False, 0.0, [ 0.0, 0.0 ])
+		return (False, 0.0, derivative)
 
 class BCH_VerticalGradient(OpenGeoSys.BoundaryCondition):
 
@@ -226,14 +230,15 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 		
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		x, y, z = coords
-		
+
+		derivative = [0.0] * len(primary_vars)
+
 		under_glacier = x-self.glacier.x_0 <= self.glacier.length(t) > 0
 		if under_glacier:
 			value = self.glacier.tangentialstress(x,t)
-			derivative = [ 0.0, 0.0 ]
 			return (True, value, derivative)
 		# no BC => free boundary then (no flux)
-		return (False, 0.0, [ 0.0, 0.0 ])
+		return (False, 0.0, derivative)
 
 class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 	
@@ -244,14 +249,15 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		x, y, z = coords
-		
+
+		derivative = [0.0] * len(primary_vars)
+
 		under_glacier = x-self.glacier.x_0 <= self.glacier.length(t) > 0
 		if under_glacier:
 			value = self.glacier.normalstress(x,t)
-			derivative = [ 0.0, 0.0,   ]
 			return (True, value, derivative)
 		# no BC => free boundary then (no flux)
-		return (False, 0.0, [ 0.0, 0.0,   ])
+		return (False, 0.0, derivative)
 
 class BCM_BottomDisplacement_X(OpenGeoSys.BoundaryCondition):
 

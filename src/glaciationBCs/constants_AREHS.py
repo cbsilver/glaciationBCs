@@ -8,7 +8,7 @@ s_a = 365.25*24*3600 #=31557600 seconds per year
 eps = 1.e-8
 
 # Parametrization
-q_geo = 0.1			 #W/m²
+q_geo = 0.065		 #W/m²
 T_ini = 273.15 + 8.5 #K
 T_min = 273.15 - 1.5 #K
 T_bot = 380.30       #k
