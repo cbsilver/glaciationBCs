@@ -16,11 +16,12 @@ class air():
 		# instance variables
 		self.T_ini = T_ini
 		self.T_min = T_min
-		
-		self.t_ = t_		
+
+		self.t_ = t_
 		T_ = [T_ini, T_ini, T_min, T_min, T_min, T_min, T_ini]
 		self.tcr = tcr.time_control(t_, T_)
-	
+		self.t_prev = T_ini
+
 	# linear temperature profile from north to south
 	def temperature(self, t):
 		return self.tcr.function_value(t)

@@ -36,7 +36,7 @@ class time_control():
 		return t
 
 	def stage_control(self, t):
-		print("t = ", t)
+		print("t = %.1f years (%d s)" % (t/s_a, t))
 		if (     0.0 < t <= self.t_[0]):
 			return self.stages[0]
 		if (self.t_[0] < t <= self.t_[1]):

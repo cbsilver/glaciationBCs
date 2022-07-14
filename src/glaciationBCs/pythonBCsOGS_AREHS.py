@@ -56,8 +56,10 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
-		
-		print(self.air.tcr.stage_control(t))
+
+		if t != self.air.t_prev:
+			print(self.air.tcr.stage_control(t))
+			self.air.t_prev = t
 		"""
 		if x-self.glacier.x_0 > self.glacier.length(t) or self.glacier.length(t)==0.0:
 			value = self.air.temperature(t)
@@ -161,8 +163,10 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 
-		print(self.glacier.tcr_h.stage_control(t))
-		
+		if t != self.glacier.t_prev:
+			print(self.glacier.tcr_h.stage_control(t))
+			self.glacier.t_prev = t
+
 		under_glacier = x-self.glacier.x_0 <= self.glacier.length(t) > 0
 		if under_glacier:
 			# height dependent pressure from glacier

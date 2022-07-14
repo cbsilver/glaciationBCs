@@ -25,7 +25,8 @@ class glacier():
 		self.H_max = H_max
 		self.x_0 = x_0
 		self.t_ = t_
-		
+		self.t_prev = 0.
+
 		H_ = [0.0, 0.0, 0.0, 0.0, H_max, H_max, 0.0]
 		L_ = [0.0, 0.0, 0.0, 0.0, L_max, L_max, 0.0]
 		self.tcr_h = tcr.time_control(t_, H_)
