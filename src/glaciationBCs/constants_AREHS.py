@@ -12,7 +12,7 @@ eps = 1.e-8
 q_geo = 0.065		 #W/m²
 T_ini = 273.15 + 8.5 #K
 T_min = 273.15 - 1.5 #K
-T_bot = 380.30       #k
+T_bot = 345.783      #K
 
 # Geomodel-specific
 x_min = 9000		 #m

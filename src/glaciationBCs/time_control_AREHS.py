@@ -10,19 +10,18 @@ class time_control():
 	# TODO remove initialization phase
 	stages = {
 	# t0->t1
-	0 : "initialization phase", # for steady state / equilibrium geothermal heat flux
+	0 : "interglacial period",	  # interglacial (warm) period, steady state
 	# t1->t2
-	1 : "permafrost development", # in the glacial (cold) period
+	1 : "permafrost development", # part glacial (cold) period
 	# t2->t3
-	2 : "permafrost-only period", # in the glacial (cold) period
+	2 : "permafrost-only period", # part glacial (cold) period
 	# t3->t4
-    3 : "glacier advance",
+    3 : "glacier advance",		  # part glacial (cold) period
     # t4->t5
-    4 : "glacier dormancy",
-    # t4->t5
-    5 : "glacier retreat",
+    4 : "glacier dormancy",		  # part glacial (cold) period
     # t5->t6
-    6 : "interglacial period", # warm period
+    5 : "glacier retreat",		  # interglacial (warm) period
+    # t6->... repeat cycle
     }
 
 	# constructor
@@ -37,20 +36,18 @@ class time_control():
 
 	def stage_control(self, t):
 		print("t = %.1f years (%d s)" % (t/s_a, t))
-		if (     0.0 < t <= self.t_[0]):
-			return self.stages[0]
 		if (self.t_[0] < t <= self.t_[1]):
-			return self.stages[1]
+			return self.stages[0]
 		if (self.t_[1] < t <= self.t_[2]):
-			return self.stages[2]
+			return self.stages[1]
 		if (self.t_[2] < t <= self.t_[3]):
-			return self.stages[3]
+			return self.stages[2]
 		if (self.t_[3] < t <= self.t_[4]):
-			return self.stages[4]
+			return self.stages[3]
 		if (self.t_[4] < t <= self.t_[5]):
-			return self.stages[5]
+			return self.stages[4]
 		if (self.t_[5] < t <= self.t_[6]):
-			return self.stages[6]
+			return self.stages[5]
 		return "undefined stage"
 
 	def linear_function(self, t, t_S, t_E, f_S, f_E):
