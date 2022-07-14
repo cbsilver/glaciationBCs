@@ -11,7 +11,7 @@ from glaciationBCs.constants_AREHS import s_a
 class air():
 	# class variables: owned by the class itself, shared by all instances of the class
 	pressure  = 1.e5 #Pa
-	
+
 	def __init__(self, T_ini, T_min, t_):
 		# instance variables
 		self.T_ini = T_ini
@@ -25,6 +25,6 @@ class air():
 	# linear temperature profile from north to south
 	def temperature(self, t):
 		return self.tcr.function_value(t)
-		
+
 	def plot_evolution(self):
 		self.tcr.plot_evolution()

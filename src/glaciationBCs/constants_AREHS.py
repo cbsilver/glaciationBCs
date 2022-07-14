@@ -59,7 +59,7 @@ HA_vol = 1342.8 #m³
 # Times:
 t_zwischen_BE = 23*s_a
 t_zwischen_HA = 30*s_a
-t_voll = 80*s_a 
+t_voll = 80*s_a
 # => end of stepwise filling = heat source starts in the model
 
 t_inter_BE = 23*s_a

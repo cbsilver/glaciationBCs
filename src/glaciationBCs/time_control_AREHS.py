@@ -24,10 +24,10 @@ class time_control():
     # t5->t6
     6 : "interglacial period", # warm period
     }
-	
+
 	# constructor
 	def __init__(self, t_, f_):
-		# instance variables	
+		# instance variables
 		self.t_ = t_
 		self.f_ = f_
 
@@ -52,7 +52,7 @@ class time_control():
 		if (self.t_[5] < t <= self.t_[6]):
 			return self.stages[6]
 		return "undefined stage"
-	
+
 	def linear_function(self, t, t_S, t_E, f_S, f_E):
 		if (f_E==f_S):
 			return f_S
@@ -60,7 +60,7 @@ class time_control():
 			Df = f_E - f_S
 			Dt = t_E - t_S
 			return Df/Dt * (t-t_S) + f_S
-	
+
 	def function_value(self, t):
 		# TODO for loop over all stages
 		if (self.t_[0] <= t <= self.t_[1]):
@@ -75,12 +75,12 @@ class time_control():
 			return self.linear_function(t, self.t_[4], self.t_[5], self.f_[4], self.f_[5])
 		if (self.t_[5] <  t <= self.t_[6]):
 			return self.linear_function(t, self.t_[5], self.t_[6], self.f_[5], self.f_[6])
-		
+
 	def plot_evolution(self):
 		tRange = np.linspace(self.t_[0],self.t_[6],20)
 		fRange = np.empty(shape=[0])
 		for t in tRange:
-			f = self.function_value(t)	
+			f = self.function_value(t)
 			fRange = np.append(fRange,f)
 		fig,ax = plt.subplots()
 		ax.set_title('Temporal evolution')

@@ -16,7 +16,7 @@ class glacier():
 	T_under = 273.15 + 0.5 #K
 	fricnum = 0.2
 	qf_melt = 6e-3 * 1 / s_a # = 6mm/a
-	
+
 	# constructor
 	def __init__(self, L_dom, L_max, H_max, x_0, t_):
 		# instance variables
@@ -31,31 +31,31 @@ class glacier():
 		L_ = [0.0, 0.0, 0.0, 0.0, L_max, L_max, 0.0]
 		self.tcr_h = tcr.time_control(t_, H_)
 		self.tcr_l = tcr.time_control(t_, L_)
-		
+
 	def normalstress(self, x, t):
 		return -self.rho_ice * gravity * self.local_height(x,t)
-		
+
 	def tangentialstress(self, x, t):
-		return self.fricnum * self.normalstress(x, t)	
+		return self.fricnum * self.normalstress(x, t)
 
 	def pressure(self, x, t):
-		return -self.normalstress(x,t) 
-    
+		return -self.normalstress(x,t)
+
 	def temperature(self, x, t):
 		return self.T_under
-    
+
 	# analytical function for the glacier's shape
 	def local_height(self,x,t):
 		# TODO coords = swap(coords) # y->x, z->y
-	
+
 		l = self.length(t)
 		if l==0:
 			return 0
 		else:
 			xi = (x-self.x_0) / l
-			if xi<=1: 
+			if xi<=1:
 				return self.height(t) * ((1 - (xi**2.5)**1.5))
-			else: 
+			else:
 				#print("Warning: local coordinate must not be greater 1, but is ", xi)
 				return 0
 
@@ -72,14 +72,14 @@ class glacier():
 		q = qf_melt
 		# constant flux at a frozen glacier base
 		q = 0.0
-		
+
 		return q
 
 	# auxiliary functions
 	def print_max_load(self):
 		print("Maximal normal stress due to glacier load: ")
 		print(self.normalstress(self.x_0,self.t_[5])/1e6, "MPa")
-		
+
 	def plot_evolving_shape(self):
 		tRange = np.linspace(self.t_[6],self.t_[0],11)
 		fig,ax = plt.subplots()
@@ -88,7 +88,7 @@ class glacier():
 			xRange = np.linspace(self.x_0, self.x_0 + self.length(t),110)
 			yRange = np.empty(shape=[0])
 			for x in xRange:
-				y = self.local_height(x,t)	
+				y = self.local_height(x,t)
 				yRange = np.append(yRange,y)
 			ax.plot(xRange,yRange,label='t=$%.2f $ ' %(t/s_a))
 			#ax.fill_between(xRange, 0, yRange)
@@ -98,8 +98,7 @@ class glacier():
 		fig.legend()
 		# fig.savefig("glacier_test.png")
 		plt.show()
-	
+
 	def plot_evolution(self):
 		self.tcr_h.plot_evolution()
 		self.tcr_l.plot_evolution()
-
