@@ -1,3 +1,4 @@
+import numpy as np
 # Physical units: kg, m, s, K
 
 # Physical constants in units: kg, m, s, K
@@ -42,13 +43,13 @@ t_ = [t_0, t_1, t_2, t_3, t_4, t_5, t_6]
 
 # Radioactive waste (Jobmann et al., 2017 - Projekt Ansicht):
 # Parameters RK-BE
-BE_Q = [842.65, 1269.66, 3895.17, 8308.18, 42363.74]	# W/m³
-BE_z = [3.58e-11, 2.95e-10, 9.12e-10, 1.04e-8, 2.62e-8]	# 1/s
+BE_Q = np.array([842.65, 1269.66, 3895.17, 8308.18, 42363.74])	# W/m³
+BE_z = np.array([3.58e-11, 2.95e-10, 9.12e-10, 1.04e-8, 2.62e-8])	# 1/s
 BE_f = (2/3)*0.05
 
 # Parameters RK-HA:
-HA_Q = [7583.16, 2412.91, 2458.56, 2546.25, 7231.62]	# W/m³
-HA_z = [8.28e-9, 6.12e-10, 7.15e-10, 7.15e-10, 8.28e-9]	# 1/s
+HA_Q = np.array([7583.16, 2412.91, 2458.56, 2546.25, 7231.62])	# W/m³
+HA_z = np.array([8.28e-9, 6.12e-10, 7.15e-10, 7.15e-10, 8.28e-9])	# 1/s
 HA_f = (2*0.182/0.72)*0.05
 
 # Total volume:

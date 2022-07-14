@@ -37,11 +37,11 @@ class repo():
 		
 	def radioactive_heatflow(self,t): # heat flow = Wärmestrom
 
-		Q_BE = lambda t: np.sum([self.BE_Q[i]*np.exp(-t*self.BE_z[i]) for i in range(5)]) 
-		Q_HA = lambda t: np.sum([self.HA_Q[i]*np.exp(-t*self.HA_z[i]) for i in range(5)]) 
+		Q_BE = lambda t: np.sum(self.BE_Q[0:4]*np.exp(-t@self.BE_z[np.newaxis,0:4]))
+		Q_HA = lambda t: np.sum(self.HA_Q[0:4]*np.exp(-t@self.HA_z[np.newaxis,0:4]))
 		# stepwise filling of RK-BE
-		Qsum_BE = np.sum([Q_BE(t-i*s_a + self.t_inter_BE) for i in range(0,80,4)])
-		Qsum_HA = np.sum([Q_HA(t-i*s_a + self.t_inter_HA) for i in range(0,80,4)])
+		Qsum_BE = np.sum(Q_BE(t-np.arange(0,80,4)[:,np.newaxis]*s_a + self.t_inter_BE))
+		Qsum_HA = np.sum(Q_HA(t-np.arange(0,80,4)[:,np.newaxis]*s_a + self.t_inter_HA))
 		
 		return Qsum_BE*self.BE_vol*self.BE_f + Qsum_HA*self.HA_vol*self.HA_f
 
