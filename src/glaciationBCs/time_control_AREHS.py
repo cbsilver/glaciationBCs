@@ -7,7 +7,6 @@ from glaciationBCs.constants_AREHS import *
 
 class time_control():
 	# class variables: owned by the class itself, static, shared by all class instances
-	# TODO remove initialization phase
 	stages = {
 	# t0->t1
 	0 : "interglacial period",	  # interglacial (warm) period, steady state

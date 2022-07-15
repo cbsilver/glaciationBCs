@@ -34,6 +34,7 @@ class repo():
 		self.t_inter_BE = t_inter_BE
 		self.t_inter_HA = t_inter_HA
 		self.t_filled = t_filled
+		self.t_prev = 0.
 
 	def radioactive_heatflow(self,t): # heat flow = Wärmestrom
 
@@ -47,9 +48,9 @@ class repo():
 
 	def radioactive_heatflux(self,t): # heat flux = Wärmestromdichte!
 		# shift time to when the dgr is filled completely
-		t = self.t_filled + t
+		shifted_t = self.t_filled + t
 		# TODO: remove sqrt for 3D
-		return np.sqrt(self.radioactive_heatflow(t)) / self.dgr_area #TODO line start and endpoint
+		return np.sqrt(self.radioactive_heatflow(shifted_t)) / self.dgr_area
 
 
 	# auxiliary functions
