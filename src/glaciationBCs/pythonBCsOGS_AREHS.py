@@ -22,7 +22,11 @@ import OpenGeoSys
 # H			pressure		hydraulic flux
 # M			displacement	momentum flux (stress vector)
 
-#TODO linear distribution for T gradient and p gradient at left boundary
+#TODO directions instead of coordinates:
+# * glacier advance direction
+# * vertical direction
+# * OR: north(n), east(e), south(s), west(w), vertical
+#TODO 2D -> 3D: coords = swap(coords) # y->x, z->y
 
 # ---------------------------------------------------------
 # Thermal BCs
@@ -103,7 +107,7 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 	def __init__(self):
 		super(BCT_BottomHeatFlux, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.crust = crc.crust(q_geo, y_min, y_max, T_bot)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
 		x, y, z = coords
@@ -114,13 +118,50 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 		derivative = [0.0] * len(primary_vars)
 		return (True, value, derivative)
 
+class BCT_NorthernHeatFlux(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCT_NorthernHeatFlux, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
+
+	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
+		x, y, z = coords
+
+		# get heat flux component
+		T_top = self.glacier.temperature(x,t)
+		value =-self.crust.lateral_heatflux(y, T_top)
+
+		derivative = [0.0] * len(primary_vars)
+		return (True, value, derivative)
+
+class BCT_SouthernHeatFlux(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCT_SouthernHeatFlux, self).__init__()
+		# instantiate member objects of the external geosphere
+		self.air = air.air(T_ini, T_min, t_)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
+
+	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
+		x, y, z = coords
+
+		# evolving surface temperature
+		T_atm = self.air.temperature(t)
+		# get heat flux component
+		value = self.crust.lateral_heatflux(y, T_atm)
+
+		derivative = [0.0] * len(primary_vars)
+		return (True, value, derivative)
+
 class BCT_VerticalGradient(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCT_VerticalGradient, self).__init__()
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
-		self.crust = crc.crust(q_geo, y_min, y_max, T_bot)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
@@ -128,7 +169,7 @@ class BCT_VerticalGradient(OpenGeoSys.BoundaryCondition):
 		# evolving surface temperature
 		T_top = self.air.temperature(t)
 		# vertical geothermal gradient
-		value = self.crust.geothermal_temperature(x,y,z,t,T_top)
+		value = self.crust.geothermal_temperature(y, T_top)
 
 		return (True, value)
 
@@ -201,13 +242,13 @@ class BCH_VerticalGradient(OpenGeoSys.BoundaryCondition):
 		super(BCH_VerticalGradient, self).__init__()
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
-		self.crust = crc.crust(q_geo, y_min, y_max, T_bot)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 
 		# height dependent pressure from the crust
-		p_pore = self.crust.hydrostatic_pressure(x,y,z,t)
+		p_pore = self.crust.hydrostatic_pressure(y)
 		# fixed pressure from ambient air
 		p_atmo = self.air.pressure
 
@@ -266,13 +307,13 @@ class BCM_BottomDisplacement_X(OpenGeoSys.BoundaryCondition):
 	def __init__(self):
 		super(BCM_BottomDisplacement_X, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.crust = crc.crust(q_geo, y_min, y_max, T_bot)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 
 		# prescribe displacement u_x
-		value = self.crust.displacement_below(x,y,z,t)[0]
+		value = self.crust.displacement_below()[0]
 
 		return (True, value)
 
@@ -281,13 +322,13 @@ class BCM_BottomDisplacement_Y(OpenGeoSys.BoundaryCondition):
 	def __init__(self):
 		super(BCM_BottomDisplacement_Y, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.crust = crc.crust(q_geo, y_min, y_max, T_bot)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 
 		# prescribe displacement u_y
-		value = self.crust.displacement_below(x,y,z,t)[1]
+		value = self.crust.displacement_below()[1]
 
 		return (True, value)
 
@@ -296,13 +337,13 @@ class BCM_LateralDisplacement_X(OpenGeoSys.BoundaryCondition):
 	def __init__(self):
 		super(BCM_LateralDisplacement_X, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.crust = crc.crust(q_geo, y_min, y_max, T_bot)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 
 		# prescribe displacement u_x
-		value = self.crust.displacement_aside(x,y,z,t)[0]
+		value = self.crust.displacement_aside()[0]
 
 		return (True, value)
 
@@ -311,13 +352,13 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 	def __init__(self):
 		super(BCM_LateralDisplacement_Y, self).__init__()
 		# instantiate member objects of the external geosphere
-		self.crust = crc.crust(q_geo, y_min, y_max, T_bot)
+		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		x, y, z = coords
 
 		# prescribe displacement u_y
-		value = self.crust.displacement_aside(x,y,z,t)[1]
+		value = self.crust.displacement_aside()[1]
 
 		return (True, value)
 
@@ -344,6 +385,8 @@ bc_T_dgrepo_inside_VolSource = BCT_SourceFromRepository()
 
 # Lithosphere BCs
 bc_T_crustal_below_Neumann_y = BCT_BottomHeatFlux()
+bc_T_crustal_aside_Neumann_n = BCT_NorthernHeatFlux()
+bc_T_crustal_aside_Neumann_s = BCT_SouthernHeatFlux()
 bc_T_crustal_aside_Dirichlet = BCT_VerticalGradient()
 bc_H_crustal_aside_Dirichlet = BCH_VerticalGradient()
 bc_M_crustal_aside_Dirichlet_x = BCM_LateralDisplacement_X()

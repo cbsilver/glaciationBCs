@@ -46,8 +46,6 @@ class glacier():
 
 	# analytical function for the glacier's shape
 	def local_height(self,x,t):
-		# TODO coords = swap(coords) # y->x, z->y
-
 		l = self.length(t)
 		if l==0:
 			return 0
