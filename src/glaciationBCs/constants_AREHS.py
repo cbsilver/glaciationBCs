@@ -17,6 +17,13 @@ T_min = 273.15 - 1.5 #K
 T_bot = 345.783      #K
 
 # TODO Geomodel-specific
+#Salz-Kissen
+x_min = 1408.66		 #m
+x_max = 13008.66	 #m
+y_min =-1151.14 	 #m
+y_max = 85  		 #m
+
+# Ton-Nord
 x_min = 9000		 #m
 x_max = 20950		 #m
 y_min =-2216.03		 #m
