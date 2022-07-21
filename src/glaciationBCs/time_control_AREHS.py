@@ -35,18 +35,9 @@ class time_control():
 
 	def stage_control(self, t):
 		print("t = %.1f years (%d s)" % (t/s_a, t))
-		if (self.t_[0] < t <= self.t_[1]):
-			return self.stages[0]
-		if (self.t_[1] < t <= self.t_[2]):
-			return self.stages[1]
-		if (self.t_[2] < t <= self.t_[3]):
-			return self.stages[2]
-		if (self.t_[3] < t <= self.t_[4]):
-			return self.stages[3]
-		if (self.t_[4] < t <= self.t_[5]):
-			return self.stages[4]
-		if (self.t_[5] < t <= self.t_[6]):
-			return self.stages[5]
+		for i in range(6):
+			if (self.t_[i] < t <= self.t_[i+1]):
+				return self.stages[i]
 		return "undefined stage"
 
 	def linear_function(self, t, t_S, t_E, f_S, f_E):
@@ -58,19 +49,10 @@ class time_control():
 			return Df/Dt * (t-t_S) + f_S
 
 	def function_value(self, t):
-		# TODO for loop over all stages
-		if (self.t_[0] <= t <= self.t_[1]):
-			return self.linear_function(t, self.t_[0], self.t_[1], self.f_[0], self.f_[1])
-		if (self.t_[1] <  t <= self.t_[2]):
-			return self.linear_function(t, self.t_[1], self.t_[2], self.f_[1], self.f_[2])
-		if (self.t_[2] <  t <= self.t_[3]):
-			return self.linear_function(t, self.t_[2], self.t_[3], self.f_[2], self.f_[3])
-		if (self.t_[3] <  t <= self.t_[4]):
-			return self.linear_function(t, self.t_[3], self.t_[4], self.f_[3], self.f_[4])
-		if (self.t_[4] <  t <= self.t_[5]):
-			return self.linear_function(t, self.t_[4], self.t_[5], self.f_[4], self.f_[5])
-		if (self.t_[5] <  t <= self.t_[6]):
-			return self.linear_function(t, self.t_[5], self.t_[6], self.f_[5], self.f_[6])
+		for i in range(6):
+			if (self.t_[i] <= t <= self.t_[i+1]):
+				return self.linear_function(t, self.t_[i], self.t_[i+1],
+											   self.f_[i], self.f_[i+1])
 
 	def plot_evolution(self):
 		tRange = np.linspace(self.t_[0],self.t_[6],20)
