@@ -6,6 +6,7 @@ import sys
 print(sys.version)
 
 import matplotlib
+from glaciationBCs import coord_control_AREHS as uvw# coordinates
 from glaciationBCs import glacierclass_AREHS as glc	# glacier
 from glaciationBCs import crustclass_AREHS as crc 	# earth crust
 from glaciationBCs import repoclass_AREHS as dgr	# repository
@@ -15,19 +16,12 @@ from glaciationBCs.constants_AREHS import *			# constants
 import OpenGeoSys
 
 # Nomenclature: BC Process_LocationQuantity_Component
-# 					(THM)			(XYZ)
+# 					(THM)					(XYZ) TODO
 
 # Process	Dirichlet BC	Neumann BC (normal to boundary)
 # T			temperature		heat flux
 # H			pressure		hydraulic flux
 # M			displacement	momentum flux (stress vector)
-
-#TODO directions instead of coordinates:
-# * glacier advance direction gad => a / u
-# * vertical direction => g / v
-# * lateral direction : w
-# * OR: north(n), east(e), south(s), west(w), vertical
-#TODO 2D -> 3D: coords = swap(coords) # y->x, z->y
 
 # ---------------------------------------------------------
 # Thermal BCs
@@ -40,7 +34,6 @@ class BCT_InitialTemperature(OpenGeoSys.BoundaryCondition):
 		self.air = air.air(T_ini, T_min, t_)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
 
 		value = self.air.T_ini
 
@@ -50,6 +43,7 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCT_SurfaceTemperature, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
@@ -57,7 +51,7 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 			self.air.plot_evolution()
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		if t != self.air.t_prev:
 			print(self.air.tcr.stage_control(t))
@@ -76,6 +70,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 
 	def __init__(self):
 		super(BCT_SourceFromRepository, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol,
 							 100*lrepo, t_inter_BE, t_inter_HA, t_filled)
@@ -84,7 +79,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 			self.repo.plot_evolution()
 
 	def getFlux(self, t, coords, primary_vars):
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		value = 0
 		inside_repo = (xrmin <= x <= xrmax) and (yrmin <= y <= yrmax)
@@ -106,11 +101,12 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCT_BottomHeatFlux, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		# get heat flux component
 		value = self.crust.geothermal_heatflux()[1]
@@ -122,13 +118,14 @@ class BCT_LateralHeatFlux(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCT_LateralHeatFlux, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		under_glacier = x-self.glacier.x_0 <= self.glacier.length(t) > 0
 		if under_glacier:
@@ -152,12 +149,13 @@ class BCT_VerticalGradient(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCT_VerticalGradient, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		# evolving surface temperature
 		T_top = self.air.temperature(t)
@@ -177,7 +175,6 @@ class BCH_InitialPressure(OpenGeoSys.BoundaryCondition):
 		self.air = air.air(T_ini, T_min, t_)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
 
 		value = self.air.pressure
 
@@ -188,12 +185,13 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCH_SurfacePressure, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		if t != self.glacier.t_prev:
 			print(self.glacier.tcr_h.stage_control(t))
@@ -213,11 +211,12 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCH_SurfaceInflux, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: hydraulic flux
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		derivative = [0.0] * len(primary_vars)
 
@@ -233,12 +232,13 @@ class BCH_VerticalGradient(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCH_VerticalGradient, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		# height dependent pressure from the crust
 		p_pore = self.crust.hydrostatic_pressure(y)
@@ -257,6 +257,7 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCM_SurfaceTraction_X, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 		if plotinput:
@@ -265,7 +266,7 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 			self.glacier.plot_evolving_shape()
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		derivative = [0.0] * len(primary_vars)
 
@@ -280,11 +281,12 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
 		super(BCM_SurfaceTraction_Y, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
-		x, y, z = coords
+		x, y, z = self.uvw.assign_coordinates(coords)
 
 		derivative = [0.0] * len(primary_vars)
 
@@ -303,7 +305,6 @@ class BCM_BottomDisplacement_X(OpenGeoSys.BoundaryCondition):
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
 
 		# prescribe displacement u_x
 		value = self.crust.displacement_below()[0]
@@ -318,7 +319,6 @@ class BCM_BottomDisplacement_Y(OpenGeoSys.BoundaryCondition):
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
 
 		# prescribe displacement u_y
 		value = self.crust.displacement_below()[1]
@@ -333,7 +333,6 @@ class BCM_LateralDisplacement_X(OpenGeoSys.BoundaryCondition):
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
 
 		# prescribe displacement u_x
 		value = self.crust.displacement_aside()[0]
@@ -348,7 +347,6 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
-		x, y, z = coords
 
 		# prescribe displacement u_y
 		value = self.crust.displacement_aside()[1]

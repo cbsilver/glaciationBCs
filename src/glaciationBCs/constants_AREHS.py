@@ -28,6 +28,7 @@ x_min = 9000		 #m
 x_max = 20950		 #m
 y_min =-2216.03		 #m
 y_max = 67.0103		 #m
+
 lrepo = 3000		 #m / m²
 """
 yr =-600			 #m
@@ -82,5 +83,5 @@ t_inter_HA = 30*s_a
 t_filled = 80*s_a
 
 # settings / set up
-# flag for 2D / 3D
+dimension = 2
 plotinput = False
