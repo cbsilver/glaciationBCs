@@ -2,6 +2,7 @@
 # Physical units: kg, m, s, K
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from glaciationBCs.constants_AREHS import gravity
 from glaciationBCs.constants_AREHS import rho_wat
@@ -37,7 +38,7 @@ class crust():
 
 	def lateral_heatflux(self, y, T_atm):
 		# linear profile according to ???
-		q_max = self.v_fluid * (T_atm - self.T_ini) * rho_wat * c_p_wat
+		q_max = self.v_fluid * (self.T_ini - T_atm) * rho_wat * c_p_wat
 		Dy = (self.y_min - self.y_max)
 		return q_max/Dy * (y - self.y_max)
 
@@ -45,3 +46,34 @@ class crust():
 		# linear profile according to gravity
 		p_pore = rho_wat * gravity * (self.y_max - y)
 		return p_pore
+
+	#TODO lithostatic BCs depend on porosity
+	def lithostatic_stresses(self, y):
+		# [sig_xx, sig_yy, sig_zz]
+		return [0.0, 0.0, 0.0]
+
+	def plot_profile(self, T_atm):
+		yRange = np.linspace(self.y_min,self.y_max,20)
+		#fRange = self.hydrostatic_pressure(yRange)
+		fRange = self.lateral_heatflux(yRange, T_atm)
+		fig,ax = plt.subplots()
+		ax.set_title('Vertical profile')
+		ax.plot(fRange, yRange)
+		ax.set_xlabel('$p$ / Pa')
+		ax.set_ylabel('$y$ / m')
+		ax.grid()
+		plt.show()
+
+	def plot_profile_evolution(self):
+		yRange = np.linspace(self.y_min,self.y_max,20)
+		TRange = np.linspace(self.T_ini,self.T_ini-10,10)
+		fig,ax = plt.subplots()
+		for T_atm in TRange:
+			fRange = self.lateral_heatflux(yRange, T_atm)
+			ax.plot(fRange, yRange, label='T_atm=$%.2f $ ' %(T_atm))
+		ax.set_title('Vertical profile')
+		ax.set_xlabel('$q_x$ / W/m²')
+		ax.set_ylabel('$y$ / m')
+		ax.grid()
+		fig.legend()
+		plt.show()

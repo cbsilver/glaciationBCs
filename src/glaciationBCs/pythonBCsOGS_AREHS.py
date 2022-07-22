@@ -23,8 +23,9 @@ import OpenGeoSys
 # M			displacement	momentum flux (stress vector)
 
 #TODO directions instead of coordinates:
-# * glacier advance direction
-# * vertical direction
+# * glacier advance direction gad => a / u
+# * vertical direction => g / v
+# * lateral direction : w
 # * OR: north(n), east(e), south(s), west(w), vertical
 #TODO 2D -> 3D: coords = swap(coords) # y->x, z->y
 
@@ -67,7 +68,6 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 			# prescribe fixed temperature underneath the glacier body
 			value = self.glacier.temperature(x,t)
 		else:
-			#linear profile from north to south
 			value = self.air.temperature(t)
 
 		return (True, value)
@@ -118,40 +118,33 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 		derivative = [0.0] * len(primary_vars)
 		return (True, value, derivative)
 
-class BCT_NorthernHeatFlux(OpenGeoSys.BoundaryCondition):
+class BCT_LateralHeatFlux(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self):
-		super(BCT_NorthernHeatFlux, self).__init__()
+		super(BCT_LateralHeatFlux, self).__init__()
 		# instantiate member objects of the external geosphere
+		self.air = air.air(T_ini, T_min, t_)
 		self.glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
 		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
 		x, y, z = coords
 
+		under_glacier = x-self.glacier.x_0 <= self.glacier.length(t) > 0
+		if under_glacier:
+			T_top = self.glacier.temperature(x,t)
+		else:
+			T_top = self.air.temperature(t)
+
 		# get heat flux component
-		T_top = self.glacier.temperature(x,t)
-		value =-self.crust.lateral_heatflux(y, T_top)
-
-		derivative = [0.0] * len(primary_vars)
-		return (True, value, derivative)
-
-class BCT_SouthernHeatFlux(OpenGeoSys.BoundaryCondition):
-
-	def __init__(self):
-		super(BCT_SouthernHeatFlux, self).__init__()
-		# instantiate member objects of the external geosphere
-		self.air = air.air(T_ini, T_min, t_)
-		self.crust = crc.crust(q_geo, y_min, y_max, T_ini, T_bot)
-
-	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
-		x, y, z = coords
-
-		# evolving surface temperature
-		T_atm = self.air.temperature(t)
-		# get heat flux component
-		value = self.crust.lateral_heatflux(y, T_atm)
-
+		q_mag = self.crust.lateral_heatflux(y, T_top)
+		
+		at_northern_boundary = (x-eps < x_min < x+eps)
+		if at_northern_boundary:
+			value = q_mag
+		else:#southern boundary
+			value =-q_mag
+		
 		derivative = [0.0] * len(primary_vars)
 		return (True, value, derivative)
 
@@ -385,8 +378,7 @@ bc_T_dgrepo_inside_VolSource = BCT_SourceFromRepository()
 
 # Lithosphere BCs
 bc_T_crustal_below_Neumann_y = BCT_BottomHeatFlux()
-bc_T_crustal_aside_Neumann_n = BCT_NorthernHeatFlux()
-bc_T_crustal_aside_Neumann_s = BCT_SouthernHeatFlux()
+bc_T_crustal_aside_Neumann_x = BCT_LateralHeatFlux()
 bc_T_crustal_aside_Dirichlet = BCT_VerticalGradient()
 bc_H_crustal_aside_Dirichlet = BCH_VerticalGradient()
 bc_M_crustal_aside_Dirichlet_x = BCM_LateralDisplacement_X()
