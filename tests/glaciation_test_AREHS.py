@@ -14,8 +14,13 @@ repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol, lrepo, t_int
 repo.plot_evolution()
 repo.print_max_load()
 
-glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_)
+glacier = glc.glacier(L_dom, L_max, H_max, u_0, t_)
 glacier.plot_evolution()
+glacier.plot_evolving_shape()
 
 air = air.air(T_ini, T_min, t_)
 air.plot_evolution()
+
+crust = crc.crust(q_geo, v_min, v_max, T_ini, T_bot)
+crust.plot_profile(T_ini)
+crust.plot_profile_evolution()

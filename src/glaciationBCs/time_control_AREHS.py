@@ -1,3 +1,4 @@
+# Auxiliary class for piecewise linear time functions
 # Physical units: kg, m, s, K
 
 import numpy as np

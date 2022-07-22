@@ -1,5 +1,7 @@
-import numpy as np
+# List of all relevant constants
 # Physical units: kg, m, s, K
+
+import numpy as np
 
 # Physical constants in units: kg, m, s, K
 gravity = 9.81		 #m/s²
@@ -17,35 +19,35 @@ T_min = 273.15 - 1.5 #K
 T_bot = 345.783      #K
 
 # TODO Geomodel-specific
-#Salz-Kissen
-x_min = 1408.66		 #m
-x_max = 13008.66	 #m
-y_min =-1151.14 	 #m
-y_max = 85  		 #m
+# Salz-Kissen
+u_min = 1408.66		 #m
+u_max = 13008.66	 #m
+v_min =-1151.14 	 #m
+v_max = 85  		 #m
 
 # Ton-Nord
-x_min = 9000		 #m
-x_max = 20950		 #m
-y_min =-2216.03		 #m
-y_max = 67.0103		 #m
+u_min = 9000		 #m
+u_max = 20950		 #m
+v_min =-2216.03		 #m
+v_max = 67.0103		 #m
 
 lrepo = 3000		 #m / m²
 """
-yr =-600			 #m
-dy = 100.			 #m
+vr =-600			 #m
+dv = 100.			 #m
 """
-yr =-1260			 #m
-dy = 320.			 #m
+vr =-1260			 #m
+dv = 320.			 #m
 
-xrmin = (x_max+x_min)/2 - lrepo/2
-xrmax = (x_max+x_min)/2 + lrepo/2
-yrmin = yr - dy/2	 #m
-yrmax = yr + dy/2	 #m
+urmin = (u_max+u_min)/2 - lrepo/2
+urmax = (u_max+u_min)/2 + lrepo/2
+vrmin = vr - dv/2	 #m
+vrmax = vr + dv/2	 #m
 
-L_dom = x_max - x_min#m
+L_dom = u_max - u_min#m
 L_max = 0.8 * L_dom	 #m
 H_max = 700			 #m
-x_0 = x_min 		 #m
+u_0 = u_min 		 #m
 
 # Key points for time control
 t_0 = 0.0 * 0.000 * s_a #s

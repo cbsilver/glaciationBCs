@@ -1,3 +1,6 @@
+# Auxiliary class for coordinate handling and shifting 2D/3D
+# Physical units: kg, m, s, K
+
 import numpy as np
 
 # CONVENTION: directions instead of coordinates:
