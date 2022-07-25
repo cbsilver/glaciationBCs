@@ -16,13 +16,13 @@ class time_control():
 	# t2->t3
 	2 : "permafrost-only period", # part glacial (cold) period
 	# t3->t4
-    3 : "glacier advance",		  # part glacial (cold) period
-    # t4->t5
-    4 : "glacier dormancy",		  # part glacial (cold) period
-    # t5->t6
-    5 : "glacier retreat",		  # interglacial (warm) period
-    # t6->... repeat cycle
-    }
+	3 : "glacier advance",		  # part glacial (cold) period
+	# t4->t5
+	4 : "glacier dormancy",		  # part glacial (cold) period
+	# t5->t6
+	5 : "glacier retreat",		  # interglacial (warm) period
+	# t6->... repeat cycle
+	}
 
 	# constructor
 	def __init__(self, t_, f_):
@@ -31,13 +31,12 @@ class time_control():
 		self.f_ = f_
 
 	def time_modulation(self, t):
-		# TODO
-		return t
+		return t%self.t_[6]
 
 	def stage_control(self, t):
 		print("t = %.1f years (%d s)" % (t/s_a, t))
-		for i in range(6):
-			if (self.t_[i] < t <= self.t_[i+1]):
+		for i in range(6)[:-1]:
+			if (self.time_modulation(t) >= self.t_[i]):
 				return self.stages[i]
 		return "undefined stage"
 
@@ -50,21 +49,18 @@ class time_control():
 			return Df/Dt * (t-t_S) + f_S
 
 	def function_value(self, t):
-		for i in range(6):
-			if (self.t_[i] <= t <= self.t_[i+1]):
-				return self.linear_function(t, self.t_[i], self.t_[i+1],
-											   self.f_[i], self.f_[i+1])
+		t_mod = self.time_modulation(t)
+		for i in range(6)[::-1]:
+			if (t_mod >= self.t_[i]):
+				return self.linear_function(t_mod, self.t_[i], self.t_[i+1],
+											self.f_[i], self.f_[i+1])
 
 	def plot_evolution(self):
-		tRange = np.linspace(self.t_[0],self.t_[6],20)
-		fRange = np.empty(shape=[0])
-		for t in tRange:
-			f = self.function_value(t)
-			fRange = np.append(fRange,f)
+		tRange = np.ravel([np.array(self.t_[:-1])+i*self.t_[6] for i in range(5)])
+		fRange = [self.function_value(t) for t in tRange]
 		fig,ax = plt.subplots()
 		ax.set_title('Temporal evolution')
-		ax.plot(tRange / s_a, fRange)
-		ax.scatter(np.array(self.t_) / s_a, np.array(self.f_))
+		ax.plot(tRange / s_a, fRange, "-o")
 		ax.set_xlabel('$t$ / years')
 		ax.grid()
 		plt.show()
