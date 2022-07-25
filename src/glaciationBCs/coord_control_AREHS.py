@@ -8,23 +8,24 @@ import numpy as np
 # * v: vertical direction (gravity) | v points to the Sky
 # * w: lateral direction (only 3D)	| w points to the West
 
-#TODO 2D -> 3D: coords = swap(coords) # y->x, z->y
-
 class coord_control():
 	# class variables:
 	# -
 
-	def __init__(self, dim):
-		self.dim = dim
-		# or "2D" / "3D"
+	# constructor
+	def __init__(self, dimension):
+		# instance variables
+		if dimension == 2:
+			self.is2D = True
+		else:
+			self.is2D = False
 
 	def assign_coordinates(self, coords):
 		x, y, z = coords
-		if self.dim == 2: #2D
-			u, v, w = (x, y, z)
+		if self.is2D:
 			#return coords
-		if self.dim == 3: #3D
+			u, v, w = (x, y, z)
+		else: #3D
 			u, v, w = (y, z, x)
 		return [u, v, w]
 
-# u, v, w = assign_coordinates(coords, 2)
