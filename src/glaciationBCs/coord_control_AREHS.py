@@ -17,19 +17,14 @@ class coord_control():
 	def __init__(self, dim):
 		self.dim = dim
 		# or "2D" / "3D"
-		
+
 	def assign_coordinates(self, coords):
 		x, y, z = coords
 		if self.dim == 2: #2D
-			u=x
-			v=y
-			w=z
+			u, v, w = (x, y, z)
 			#return coords
 		if self.dim == 3: #3D
-			u=y
-			v=z
-			w=x		
+			u, v, w = (y, z, x)
 		return [u, v, w]
 
 # u, v, w = assign_coordinates(coords, 2)
-

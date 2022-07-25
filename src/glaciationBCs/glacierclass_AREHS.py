@@ -39,7 +39,7 @@ class glacier():
 		return self.fricnum * self.normalstress(u, t)
 
 	def pressure(self, u, t):
-		return -self.normalstress(x,t)
+		return -self.normalstress(u,t)
 
 	def temperature(self, u, t):
 		return self.T_under
