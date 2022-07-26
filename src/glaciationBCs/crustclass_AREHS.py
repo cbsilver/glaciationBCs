@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from glaciationBCs.constants_AREHS import gravity
 from glaciationBCs.constants_AREHS import rho_wat
 from glaciationBCs.constants_AREHS import c_p_wat
+from south_layer_bounds import *
+from layer_props import *
 
 class crust():
 	# class variables:
@@ -20,13 +22,13 @@ class crust():
 		self.v_max = v_max
 		self.T_bot = T_bot
 		self.T_ini = T_ini
-	
+
 	def geothermal_heatflux(self):
 		return [0.0, self.q_geo, 0.0]
 
 	def displacement_below(self):
 		return [0.0, 0.0, 0.0]
-		
+
 	def displacement_aside(self):
 		return [0.0, 0.0, 0.0]
 
@@ -47,10 +49,17 @@ class crust():
 		p_pore = rho_wat * gravity * (self.v_max - v)
 		return p_pore
 
-	#TODO lithostatic BCs depend on porosity
 	def lithostatic_stresses(self, v):
-		# OGS [sig_xx, sig_yy, sig_zz]
-		return [0.0, 0.0, 0.0]
+		heights = np.abs(np.diff(south_layer_bounds))
+		rho_eff = ((1. - poro_array) * rho_array + poro_array * 1000.)
+		layer_stress = rho_eff * gravity * heights
+		total_stress = np.append(0, np.add.accumulate(layer_stress[:-1]))
+		stress = 0.
+		for i, (ls, lh, lv, ts) in enumerate(zip(layer_stress, heights, south_layer_bounds[:-1], total_stress)):
+			if lv >= v >= south_layer_bounds[i+1]:
+				stress = ls/lh * (lv - v) + ts
+				break
+		return -stress
 
 	def plot_profile(self, T_atm):
 		vRange = np.linspace(self.v_min,self.v_max,20)
@@ -60,6 +69,17 @@ class crust():
 		ax.set_title('Vertical profile')
 		ax.plot(fRange, vRange)
 		ax.set_xlabel('$p$ / Pa')
+		ax.set_ylabel('$y$ / m')
+		ax.grid()
+		plt.show()
+
+	def plot_lithostatic_stress(self):
+		vRange = np.linspace(0,-1000, 100)
+		fRange = [1e-6*self.lithostatic_stresses(v)[0] for v in vRange]
+		fig,ax = plt.subplots()
+		ax.set_title('Vertical profile')
+		ax.plot(fRange, vRange)
+		ax.set_xlabel('$sigma$ / MPa')
 		ax.set_ylabel('$y$ / m')
 		ax.grid()
 		plt.show()

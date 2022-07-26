@@ -134,13 +134,13 @@ class BCT_LateralHeatFlux(OpenGeoSys.BoundaryCondition):
 
 		# get heat flux component
 		q_mag = self.crust.lateral_heatflux(v, T_top)
-		
+
 		at_northern_boundary = (u-eps < u_min < u+eps)
 		if at_northern_boundary:
 			value = q_mag			# > 0 : OGS heat influx
 		else:#southern boundary
 			value =-q_mag			# < 0 : OGS heat outflux
-		
+
 		derivative = [0.0] * len(primary_vars)
 		return (True, value, derivative)
 
@@ -352,6 +352,20 @@ class BCM_LateralDisplacement_Y(OpenGeoSys.BoundaryCondition):
 
 		return (True, value)
 
+class BCM_LateralTraction_X(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self):
+		super(BCM_LateralTraction_X, self).__init__()
+		self.uvw = uvw.coord_control(dimension)
+		# instantiate member objects of the external geosphere
+		self.crust = crc.crust(q_geo, v_min, v_max, T_ini, T_bot)
+
+	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
+		u, v, w = self.uvw.assign_coordinates(coords)
+		derivative = [0.0] * len(primary_vars)
+		value = self.crust.lithostatic_stresses(v)
+		return (True, value, derivative)
+
 
 # ---------------------------------------------
 # instantiate the BC objects used by OpenGeoSys
@@ -380,6 +394,7 @@ bc_T_crustal_aside_Dirichlet = BCT_VerticalGradient()
 bc_H_crustal_aside_Dirichlet = BCH_VerticalGradient()
 bc_M_crustal_aside_Dirichlet_x = BCM_LateralDisplacement_X()
 bc_M_crustal_aside_Dirichlet_y = BCM_LateralDisplacement_Y()
+bc_M_crustal_aside_Neumann_x = BCM_LateralTraction_X()
 bc_M_crustal_below_Dirichlet_x = BCM_BottomDisplacement_X()
 bc_M_crustal_below_Dirichlet_y = BCM_BottomDisplacement_Y()
 #bc_M_crustal_north
