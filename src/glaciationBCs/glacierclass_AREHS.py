@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from glaciationBCs import time_control_AREHS as tcr
 
 from glaciationBCs.constants_AREHS import gravity
+from glaciationBCs.constants_AREHS import rho_wat
+from glaciationBCs.constants_AREHS import rho_ice
 from glaciationBCs.constants_AREHS import s_a
 
 class glacier():
 	# class variables: owned by the class itself, static, shared by all class instances
-	rho_ice = 900 #kg/m³
-	rho_wat =1000 #kg/m³
 	T_under = 273.15 + 0.5 #K
 	fricnum = 0.2
 	qf_melt = 6e-3 * 1 / s_a # = 6mm/a
@@ -33,7 +33,7 @@ class glacier():
 		self.tcr_l = tcr.time_control(t_, L_)
 
 	def normalstress(self, u, t):
-		return -self.rho_ice * gravity * self.local_height(u, t)
+		return -rho_ice * gravity * self.local_height(u, t)
 
 	def tangentialstress(self, u, t):
 		return self.fricnum * self.normalstress(u, t)

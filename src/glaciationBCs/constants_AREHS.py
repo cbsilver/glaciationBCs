@@ -6,6 +6,7 @@ import numpy as np
 # Physical constants in units: kg, m, s, K
 gravity = 9.81		 #m/s²
 rho_wat = 1000		 #kg/m³
+rho_ice = 900		 #kg/m³
 c_p_wat = 4280		 #J/kg/K
 
 # Numerical constants
