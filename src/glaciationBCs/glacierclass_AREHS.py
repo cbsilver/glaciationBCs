@@ -50,9 +50,9 @@ class glacier():
 		if l==0:
 			return 0
 		else:
-			xi = (u - self.u_0) / l
+			xi = max(0.,(u - self.u_0) / l)
 			if xi<=1:
-				return self.height(t) * ((1 - (xi**2.5)**1.5))
+				return self.height(t) * (max(0., 1. - (xi**2.5))**1.5)
 			else:
 				#print("Warning: local coordinate must not be greater 1, but is ", xi)
 				return 0
