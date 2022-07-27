@@ -57,13 +57,13 @@ class crust():
 
 	def lithostatic_stresses(self, v):
 		heights = np.abs(np.diff(south_layer_bounds))
-		rho_eff = ((1. - poro_array) * rho_array + poro_array * 1000.)
+		rho_eff = (1. - poro_array) * rho_array + (poro_array - biot_array) * 1000.
 		layer_stress = rho_eff * gravity * heights
 		total_stress = np.append(0, np.add.accumulate(layer_stress[:-1]))
-		stress = 0.
-		for i, (ls, lh, lv, ts) in enumerate(zip(layer_stress, heights, south_layer_bounds[:-1], total_stress)):
+		stress = [0., 0., 0.]
+		for i, (ls, lh, lv, ts, nu, ab) in enumerate(zip(layer_stress, heights, south_layer_bounds[:-1], total_stress, nu_array, biot_array)):
 			if lv >= v >= south_layer_bounds[i+1]:
-				stress = ls/lh * (lv - v) + ts
+				stress = np.array([nu / (1. - nu), 1., nu / (1. - nu)]) * ls/lh * (lv - v) + ts
 				break
 		return -stress
 
@@ -84,9 +84,9 @@ class crust():
 		fRange = [1e-6*self.lithostatic_stresses(v)[0] for v in vRange]
 		fig,ax = plt.subplots()
 		ax.set_title('Vertical profile')
-		ax.plot(fRange, vRange)
-		ax.set_xlabel('$sigma$ / MPa')
-		ax.set_ylabel('$y$ / m')
+		ax.plot(vRange, fRange)
+		ax.set_ylabel('$sigma$ / MPa')
+		ax.set_xlabel('$y$ / m')
 		ax.grid()
 		plt.show()
 
