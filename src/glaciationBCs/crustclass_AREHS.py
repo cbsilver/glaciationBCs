@@ -40,6 +40,12 @@ class crust():
 
 	def lateral_heatflux(self, v, T_atm):
 		# linear profile according to ???
+		for i, lv in enumerate(south_layer_bounds[:-1]):
+			if lv >= v > south_layer_bounds[i+1]:
+				if "z" in name_array[i]:
+					return 0.
+				break
+
 		q_max = self.v_fluid * (self.T_ini - T_atm) * rho_wat * c_p_wat
 		Dv = (self.v_min - self.v_max)
 		return q_max/Dv * (v - self.v_max)
