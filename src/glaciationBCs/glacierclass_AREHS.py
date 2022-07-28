@@ -50,7 +50,9 @@ class glacier():
 		if l==0:
 			return 0
 		else:
-			xi = max(0.,(u - self.u_0) / l)
+			# local coordinate starting from the North
+			s = u - self.u_0 # ALTERNATIVE: (u_max - u)
+			xi = max(0., s/l)
 			if xi<=1:
 				return self.height(t) * (max(0., 1. - (xi**2.5))**1.5)
 			else:
@@ -76,14 +78,15 @@ class glacier():
 	# auxiliary functions
 	def print_max_load(self):
 		print("Maximal normal stress due to glacier load: ")
-		print(self.normalstress(self.u_0,self.t_[5])/1e6, "MPa")
+		print(self.normalstress(self.u_0, self.t_[5])/1e6, "MPa")
 
 	def plot_evolving_shape(self):
-		tRange = np.linspace(self.t_[6],self.t_[0],11)
+		tRange = np.linspace(self.t_[6], self.t_[0],11)
 		fig,ax = plt.subplots()
 		ax.set_title('Glacier evolution') #'Gletschervorschub'
 		for t in tRange:
-			uRange = np.linspace(self.u_0, self.u_0 + self.length(t),110)
+			uRange = np.linspace(self.u_0, self.u_0 + self.length(t), 110)
+			#uRange = np.linspace(u_max - self.length(t), u_max , 110)
 			fRange = np.empty(shape=[0])
 			for u in uRange:
 				h = self.local_height(u, t)

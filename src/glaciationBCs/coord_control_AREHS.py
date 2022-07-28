@@ -7,6 +7,10 @@ import numpy as np
 # * u: glacier advance direction	| u points to the South
 # * v: vertical direction (gravity) | v points to the Sky
 # * w: lateral direction (only 3D)	| w points to the West
+# ALTERNATIVE: TODO
+# * u: glacier retreat direction	| u points to the North
+# * v: vertical direction (gravity) | v points to the Sky
+# * w: lateral direction (only 3D)	| w points to the East
 
 class coord_control():
 	# class variables:

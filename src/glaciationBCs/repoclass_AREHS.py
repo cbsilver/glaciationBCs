@@ -12,9 +12,12 @@ class repo():
 	# -
 
 	# constructor
-	def __init__(self, BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol, dgr_area, t_inter_BE, t_inter_HA, t_filled):
+	def __init__(self, BE_Q, BE_z, BE_f, 
+					   HA_Q, HA_z, HA_f, 
+					   BE_vol, HA_vol, dgr_domain, 
+					   t_inter_BE, t_inter_HA, t_filled, dimension):
 		# instance variables: owned by instances of the class, can be different for each instance
-		# parameters RK-BE
+		# parameters RK-BE:
 		self.BE_Q = BE_Q
 		self.BE_z = BE_z
 		self.BE_f = BE_f
@@ -28,14 +31,20 @@ class repo():
 		self.BE_vol = BE_vol
 		self.HA_vol = HA_vol
 
-		self.dgr_area = dgr_area
+		self.dgr_domain = dgr_domain
 
 		# times:
 		self.t_inter_BE = t_inter_BE
 		self.t_inter_HA = t_inter_HA
 		self.t_filled = t_filled
 		self.t_prev = 0.
-
+		
+		# dimension:
+		if dimension == 2:
+			self.is2D = True
+		else:
+			self.is2D = False
+		
 	def radioactive_heatflow(self,t): # heat flow = Wärmestrom
 
 		Q_BE = lambda t: np.sum(self.BE_Q[0:4]*np.exp(-t@self.BE_z[np.newaxis,0:4]))
@@ -49,8 +58,11 @@ class repo():
 	def radioactive_heatflux(self,t): # heat flux = Wärmestromdichte!
 		# shift time to when the dgr is filled completely
 		shifted_t = self.t_filled + t
-		# TODO: remove sqrt for 3D
-		return np.sqrt(self.radioactive_heatflow(shifted_t)) / self.dgr_area
+		
+		if self.is2D:
+			return np.sqrt(self.radioactive_heatflow(shifted_t)) / self.dgr_domain
+		else: #3D
+			return self.radioactive_heatflow(shifted_t) / self.dgr_domain
 
 
 	# auxiliary functions

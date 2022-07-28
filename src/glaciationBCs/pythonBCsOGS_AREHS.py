@@ -73,26 +73,22 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol,
-							 100*lrepo, t_inter_BE, t_inter_HA, t_filled)
+							 drepo, t_inter_BE, t_inter_HA, t_filled, dimension)
 		if plotinput:
 			self.repo.print_max_load()
 			self.repo.plot_evolution()
 
 	def getFlux(self, t, coords, primary_vars):
 		u, v, w = self.uvw.assign_coordinates(coords)
-
+		
+		# prescribe heat flux from radioactive repository
 		value = 0
-		inside_repo = (urmin <= u <= urmax) and (vrmin <= v <= vrmax)
-		if inside_repo:
-			# prescribe heat flux from radioactive repository
+		if dimension==2:
+			inside_repo = (urmin <= u <= urmax) and (vrmin <= v <= vrmax)
+			if inside_repo:
+				value = self.repo.radioactive_heatflux(t)			
+		if dimension==3:
 			value = self.repo.radioactive_heatflux(t)
-			"""
-			if t != self.repo.t_prev:
-				#print("v = ",v)
-				print("t/a = ",t/s_a)
-				print("H = ", self.repo.radioactive_heatflow(t))
-				self.repo.t_prev = t
-			"""
 
 		derivative = [0.0] * len(primary_vars)
 		return (value, derivative)

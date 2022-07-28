@@ -35,7 +35,7 @@ class time_control():
 
 	def stage_control(self, t):
 		print("t = %.1f years (%d s)" % (t/s_a, t))
-		for i in range(6)[:-1]:
+		for i in range(6)[::-1]:
 			if (self.time_modulation(t) >= self.t_[i]):
 				return self.stages[i]
 		return "undefined stage"
