@@ -2,6 +2,8 @@
 # Physical units: kg, m, s, K
 
 import numpy as np
+from dgr import model_interface as model
+from glaciationBCs import coord_control_AREHS as uvw# coordinates
 
 # Physical constants in units: kg, m, s, K
 gravity = 9.81		 #m/s²
@@ -14,42 +16,42 @@ s_a = 365.25*24*3600 #=31557600 seconds per year
 eps = 1.e-8
 
 # settings / set up
-dimension = 3
+dimension = model.dimension
 plotinput = False
 
 # Geomodel-specific parameters
-# ============================TODO
-# Salz-Kissen
-u_min = 1408.66		 #m
-u_max = 13008.66	 #m
-v_min =-1151.14 	 #m
-v_max = 85  		 #m
+coord_ctrl = uvw.coord_control(model.dimension)
+coords_min = (model.xmin, model.ymin, model.zmin)
+coords_max = (model.xmax, model.ymax, model.zmax)
+u_min, v_min, w_min = coord_ctrl.assign_coordinates(coords_min)
+u_max, v_max, w_max = coord_ctrl.assign_coordinates(coords_max)
 
-# Ton-Nord 2D
-u_min = 9000		 #m
-u_max = 20950		 #m
-v_min =-2216.03		 #m
-v_max = 67.0103		 #m
-drepo = 3000		 #m
-vr =-1260			 #m
-dv = 320.			 #m
-"""
-vr =-600			 #m
-dv = 100.			 #m
-"""
-# Ton-Nord 3D
-u_min = 9000		 #m
-u_max = 20750		 #m
-v_min =-3951.98		 #m
-v_max = 67.0103		 #m
-drepo = 11250000	 #m²
-# ============================TODO
+# Target edge-length of repos, resulting repo will have a shorter edge-length
+# actual length/area is determined by the resulting mesh
+salz_kissen_2d_repo = 3000 #m
+salz_kissen_3d_repo = 3000 #m²
+ton_nord_2d_repo = 3000 #m
+ton_nord_3d_repo = 3000 #m²
+repos = {(2, 1): ton_nord_2d_repo, (2, 3): salz_kissen_2d_repo,
+         (3, 1): ton_nord_3d_repo, (3, 3): salz_kissen_3d_repo}
 
-urmin = (u_max+u_min)/2 - drepo/2
-urmax = (u_max+u_min)/2 + drepo/2
-vrmin = vr - dv/2	 #m
-vrmax = vr + dv/2	 #m
+drepo_crop = repos[(dimension, model.model_id)]
+drepo = 1.
+# the actual drepo value is only written after execution of crop_repo.py
+# but drepo here has to exist beforehand for the workflow to work
+if hasattr(model, 'drepo'):
+    drepo = model.drepo
 
+# these define the vertical bounds for cropping the repository
+# in the end only the upper bound is important, since we extract the top 
+# boundary, the bottom bound only has to be large enough to catch at least 
+# one element worth of thickness
+ton_nord_repo_v_bounds = (-890, -2200)
+salz_repo_v_bounds = (-600, -800)
+repo_v_bounds = {1: ton_nord_repo_v_bounds, 3: salz_repo_v_bounds}
+repo_vmin, repo_vmax = repo_v_bounds[model.model_id]
+
+# parameters for glacier
 L_dom = u_max - u_min#m
 L_max = 0.8 * L_dom	 #m
 H_max = 700			 #m
@@ -66,7 +68,7 @@ t_6 = t_5 + 10000 * s_a #s
 t_ = [t_0, t_1, t_2, t_3, t_4, t_5, t_6]
 
 # Thermal Parametrization
-q_geo = 0.065		 #W/m²
+q_geo = 0.065		 #W/m²   set to 0 to see the effect clearly
 T_ini = 273.15 + 8.5 #K
 T_min = 273.15 - 1.5 #K
 T_bot = 345.783      #K

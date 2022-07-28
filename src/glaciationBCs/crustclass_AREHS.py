@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 from glaciationBCs.constants_AREHS import gravity
 from glaciationBCs.constants_AREHS import rho_wat
 from glaciationBCs.constants_AREHS import c_p_wat
-from south_layer_bounds import *
-from layer_props import *
+from dgr import model_interface as model
 
 class crust():
 	# class variables:
@@ -40,11 +39,12 @@ class crust():
 
 	def lateral_heatflux(self, v, T_atm):
 		# linear profile according to ???
-		for i, lv in enumerate(south_layer_bounds[:-1]):
-			if lv >= v > south_layer_bounds[i+1]:
-				if "z" in name_array[i]:
-					return 0.
-				break
+		if model.model_id == 3:
+			for i, lv in enumerate(model.south_layer_bounds[:-1]):
+				if lv >= v > model.south_layer_bounds[i+1]:
+					if "z" in model.name_array[i]:
+						return 0.
+					break
 
 		q_max = self.v_fluid * (self.T_ini - T_atm) * rho_wat * c_p_wat
 		Dv = (self.v_min - self.v_max)
@@ -56,13 +56,14 @@ class crust():
 		return p_pore
 
 	def lithostatic_stresses(self, v):
-		heights = np.abs(np.diff(south_layer_bounds))
-		rho_eff = (1. - poro_array) * rho_array + (poro_array - biot_array) * 1000.
+		heights = np.abs(np.diff(model.south_layer_bounds))
+		rho_eff = (1. - model.poro_array) * model.rho_array + \
+					(model.poro_array - model.biot_array) * 1000.
 		layer_stress = rho_eff * gravity * heights
 		total_stress = np.append(0, np.add.accumulate(layer_stress[:-1]))
 		stress = [0., 0., 0.]
-		for i, (ls, lh, lv, ts, nu, ab) in enumerate(zip(layer_stress, heights, south_layer_bounds[:-1], total_stress, nu_array, biot_array)):
-			if lv >= v >= south_layer_bounds[i+1]:
+		for i, (ls, lh, lv, ts, nu, ab) in enumerate(zip(layer_stress, heights, model.south_layer_bounds[:-1], total_stress, model.nu_array, model.biot_array)):
+			if lv >= v >= model.south_layer_bounds[i+1]:
 				stress = np.array([nu / (1. - nu), 1., nu / (1. - nu)]) * ls/lh * (lv - v) + ts
 				break
 		return -stress

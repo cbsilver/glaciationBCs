@@ -82,13 +82,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		u, v, w = self.uvw.assign_coordinates(coords)
 		
 		# prescribe heat flux from radioactive repository
-		value = 0
-		if dimension==2:
-			inside_repo = (urmin <= u <= urmax) and (vrmin <= v <= vrmax)
-			if inside_repo:
-				value = self.repo.radioactive_heatflux(t)			
-		if dimension==3:
-			value = self.repo.radioactive_heatflux(t)
+		value = self.repo.radioactive_heatflux(t)			
 
 		derivative = [0.0] * len(primary_vars)
 		return (value, derivative)

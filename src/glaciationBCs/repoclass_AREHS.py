@@ -40,10 +40,7 @@ class repo():
 		self.t_prev = 0.
 		
 		# dimension:
-		if dimension == 2:
-			self.is2D = True
-		else:
-			self.is2D = False
+		self.dimension = dimension
 		
 	def radioactive_heatflow(self,t): # heat flow = Wärmestrom
 
@@ -59,7 +56,7 @@ class repo():
 		# shift time to when the dgr is filled completely
 		shifted_t = self.t_filled + t
 		
-		if self.is2D:
+		if self.dimension == 2:
 			return np.sqrt(self.radioactive_heatflow(shifted_t)) / self.dgr_domain
 		else: #3D
 			return self.radioactive_heatflow(shifted_t) / self.dgr_domain
