@@ -68,12 +68,12 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 
 class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 
-	def __init__(self):
+	def __init__(self, repo_size):
 		super(BCT_SourceFromRepository, self).__init__()
 		self.uvw = uvw.coord_control(dimension)
 		# instantiate member objects of the external geosphere
 		self.repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol,
-							 drepo, t_inter_BE, t_inter_HA, t_filled, dimension)
+							 repo_size, t_inter_BE, t_inter_HA, t_filled, dimension)
 		if plotinput:
 			self.repo.print_max_load()
 			self.repo.plot_evolution()
@@ -105,9 +105,10 @@ class BCT_BottomHeatFlux(OpenGeoSys.BoundaryCondition):
 
 class BCT_LateralHeatFlux(OpenGeoSys.BoundaryCondition):
 
-	def __init__(self):
+	def __init__(self, props):
 		super(BCT_LateralHeatFlux, self).__init__()
 		self.uvw = uvw.coord_control(dimension)
+		self.props = props
 		# instantiate member objects of the external geosphere
 		self.air = air.air(T_ini, T_min, t_)
 		self.glacier = glc.glacier(L_dom, L_max, H_max, u_0, t_)
@@ -123,7 +124,7 @@ class BCT_LateralHeatFlux(OpenGeoSys.BoundaryCondition):
 			T_top = self.air.temperature(t)
 
 		# get heat flux component
-		q_mag = self.crust.lateral_heatflux(v, T_top)
+		q_mag = self.crust.lateral_heatflux(v, T_top, self.props)
 
 		at_northern_boundary = (u-eps < u_min < u+eps)
 		if at_northern_boundary:

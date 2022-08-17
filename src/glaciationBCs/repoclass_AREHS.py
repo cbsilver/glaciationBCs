@@ -14,7 +14,7 @@ class repo():
 	# constructor
 	def __init__(self, BE_Q, BE_z, BE_f, 
 					   HA_Q, HA_z, HA_f, 
-					   BE_vol, HA_vol, dgr_domain, 
+					   BE_vol, HA_vol, repo_size,
 					   t_inter_BE, t_inter_HA, t_filled, dimension):
 		# instance variables: owned by instances of the class, can be different for each instance
 		# parameters RK-BE:
@@ -31,7 +31,7 @@ class repo():
 		self.BE_vol = BE_vol
 		self.HA_vol = HA_vol
 
-		self.dgr_domain = dgr_domain
+		self.repo_size = repo_size
 
 		# times:
 		self.t_inter_BE = t_inter_BE
@@ -57,9 +57,9 @@ class repo():
 		shifted_t = self.t_filled + t
 		
 		if self.dimension == 2:
-			return np.sqrt(self.radioactive_heatflow(shifted_t)) / self.dgr_domain
+			return np.sqrt(self.radioactive_heatflow(shifted_t)) / self.repo_size
 		else: #3D
-			return self.radioactive_heatflow(shifted_t) / self.dgr_domain
+			return self.radioactive_heatflow(shifted_t) / self.repo_size
 
 
 	# auxiliary functions

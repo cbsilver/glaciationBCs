@@ -37,12 +37,12 @@ class crust():
 		Dv = (self.v_min - self.v_max)
 		return DT/Dv * (v - self.v_max) + T_atm
 
-	def lateral_heatflux(self, v, T_atm):
+	def lateral_heatflux(self, v, T_atm, props):
 		# linear profile according to ???
-		if model.model_id == 3:
-			for i, lv in enumerate(model.south_layer_bounds[:-1]):
-				if lv >= v > model.south_layer_bounds[i+1]:
-					if "z" in model.name_array[i]:
+		if props.model_id == 3:
+			for i, lv in enumerate(props.south_layer_bounds[:-1]):
+				if lv >= v > props.south_layer_bounds[i+1]:
+					if "z" in props.name_array[i]:
 						return 0.
 					break
 
