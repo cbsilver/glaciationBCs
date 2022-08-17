@@ -18,9 +18,8 @@ class glacier():
 	qf_melt = 6e-3 * 1 / s_a # = 6mm/a
 
 	# constructor
-	def __init__(self, L_dom, L_max, H_max, u_0, t_):
+	def __init__(self, L_max, H_max, u_0, t_):
 		# instance variables
-		self.L_dom = L_dom
 		self.L_max = L_max
 		self.H_max = H_max
 		self.u_0 = u_0
