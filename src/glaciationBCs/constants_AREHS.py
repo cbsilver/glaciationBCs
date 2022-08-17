@@ -2,8 +2,6 @@
 # Physical units: kg, m, s, K
 
 import numpy as np
-from dgr import model_interface as model
-from glaciationBCs import coord_control_AREHS as uvw# coordinates
 
 # Physical constants in units: kg, m, s, K
 gravity = 9.81		 #m/s²
@@ -16,46 +14,10 @@ s_a = 365.25*24*3600 #=31557600 seconds per year
 eps = 1.e-8
 
 # settings / set up
-dimension = model.dimension
 plotinput = False
 
-# Geomodel-specific parameters
-coord_ctrl = uvw.coord_control(model.dimension)
-coords_min = (model.xmin, model.ymin, model.zmin)
-coords_max = (model.xmax, model.ymax, model.zmax)
-u_min, v_min, w_min = coord_ctrl.assign_coordinates(coords_min)
-u_max, v_max, w_max = coord_ctrl.assign_coordinates(coords_max)
-
-# Target edge-length of repos, resulting repo will have a shorter edge-length
-# actual length/area is determined by the resulting mesh
-salz_kissen_2d_repo = 3000 #m
-salz_kissen_3d_repo = 3000 #m²
-ton_nord_2d_repo = 3000 #m
-ton_nord_3d_repo = 3000 #m²
-repos = {(2, 1): ton_nord_2d_repo, (2, 3): salz_kissen_2d_repo,
-         (3, 1): ton_nord_3d_repo, (3, 3): salz_kissen_3d_repo}
-
-drepo_crop = repos[(dimension, model.model_id)]
-drepo = 1.
-# the actual drepo value is only written after execution of crop_repo.py
-# but drepo here has to exist beforehand for the workflow to work
-if hasattr(model, 'drepo'):
-    drepo = model.drepo
-
-# these define the vertical bounds for cropping the repository
-# in the end only the upper bound is important, since we extract the top 
-# boundary, the bottom bound only has to be large enough to catch at least 
-# one element worth of thickness
-ton_nord_repo_v_bounds = (-890, -2200)
-salz_repo_v_bounds = (-600, -800)
-repo_v_bounds = {1: ton_nord_repo_v_bounds, 3: salz_repo_v_bounds}
-repo_vmin, repo_vmax = repo_v_bounds[model.model_id]
-
 # parameters for glacier
-L_dom = u_max - u_min#m
-L_max = 0.8 * L_dom	 #m
 H_max = 700			 #m
-u_0 = u_min 		 #m
 
 # Key points for time control
 t_0 = 0.0 * 0.000 * s_a #s

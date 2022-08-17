@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from glaciationBCs.constants_AREHS import gravity
 from glaciationBCs.constants_AREHS import rho_wat
 from glaciationBCs.constants_AREHS import c_p_wat
-from dgr import model_interface as model
 
 class crust():
 	# class variables:
@@ -55,15 +54,15 @@ class crust():
 		p_pore = rho_wat * gravity * (self.v_max - v)
 		return p_pore
 
-	def lithostatic_stresses(self, v):
-		heights = np.abs(np.diff(model.south_layer_bounds))
-		rho_eff = (1. - model.poro_array) * model.rho_array + \
-					(model.poro_array - model.biot_array) * 1000.
+	def lithostatic_stresses(self, v, props):
+		heights = np.abs(np.diff(props.south_layer_bounds))
+		rho_eff = (1. - props.poro_array) * props.rho_array + \
+					(props.poro_array - props.biot_array) * 1000.
 		layer_stress = rho_eff * gravity * heights
 		total_stress = np.append(0, np.add.accumulate(layer_stress[:-1]))
 		stress = [0., 0., 0.]
-		for i, (ls, lh, lv, ts, nu, ab) in enumerate(zip(layer_stress, heights, model.south_layer_bounds[:-1], total_stress, model.nu_array, model.biot_array)):
-			if lv >= v >= model.south_layer_bounds[i+1]:
+		for i, (ls, lh, lv, ts, nu, ab) in enumerate(zip(layer_stress, heights, props.south_layer_bounds[:-1], total_stress, props.nu_array, props.biot_array)):
+			if lv >= v >= props.south_layer_bounds[i+1]:
 				stress = np.array([nu / (1. - nu), 1., nu / (1. - nu)]) * ls/lh * (lv - v) + ts
 				break
 		return -stress
@@ -82,7 +81,7 @@ class crust():
 
 	def plot_lithostatic_stress(self):
 		vRange = np.linspace(0,-1000, 100)
-		fRange = [1e-6*self.lithostatic_stresses(v)[0] for v in vRange]
+		fRange = [1e-6*self.lithostatic_stresses(v, props)[0] for v in vRange]
 		fig,ax = plt.subplots()
 		ax.set_title('Vertical profile')
 		ax.plot(vRange, fRange)

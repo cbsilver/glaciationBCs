@@ -4,7 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from glaciationBCs.constants_AREHS import *
+from glaciationBCs.constants_AREHS import s_a
 
 class time_control():
 	# class variables: owned by the class itself, static, shared by all class instances
