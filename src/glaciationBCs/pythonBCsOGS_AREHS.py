@@ -2,7 +2,6 @@
 # BCs reflect the external geosphere: cryo-, litho- and atmosphere
 # Physical units: depending on parameter set, see below!
 
-import matplotlib
 from glaciationBCs import coord_control_AREHS as uvw# coordinates
 from glaciationBCs import glacierclass_AREHS as glc	# glacier
 from glaciationBCs import crustclass_AREHS as crc 	# earth crust

@@ -50,7 +50,7 @@ class glacier():
 			return 0
 		else:
 			# local coordinate starting from the North
-			s = u - self.u_0 # ALTERNATIVE: (u_max - u)
+			s = u - self.u_0 # ALTERNATIVE: s = u_max - u
 			xi = max(0., s/l)
 			if xi<=1:
 				return self.height(t) * (max(0., 1. - (xi**2.5))**1.5)
