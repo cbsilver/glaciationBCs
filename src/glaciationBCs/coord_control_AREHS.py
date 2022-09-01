@@ -4,13 +4,13 @@
 import numpy as np
 
 # CONVENTION: directions instead of coordinates:
-# * u: glacier advance direction	| u points to the South
-# * v: vertical direction (gravity) | v points to the Sky
-# * w: lateral direction (only 3D)	| w points to the West
-# ALTERNATIVE: TODO
 # * u: glacier retreat direction	| u points to the North
 # * v: vertical direction (gravity) | v points to the Sky
 # * w: lateral direction (only 3D)	| w points to the East
+# OLD VERSION:
+# * u: glacier advance direction	| u points to the South
+# * v: vertical direction (gravity) | v points to the Sky
+# * w: lateral direction (only 3D)	| w points to the West
 
 class coord_control():
 	# class variables:

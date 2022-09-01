@@ -62,8 +62,8 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 		self.uvw = uvw.coord_control(props.dimension)
 		# instantiate member objects of the external geosphere
 		self.air = air.air(ac.T_ini, ac.T_min, ac.t_)
-		u_min, _ = model_uvw(props, 0)
-		self.glacier = glc.glacier(L_max(props), ac.H_max, u_min, ac.t_)
+		u_min, u_max = model_uvw(props, 0)
+		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 		if ac.plotinput:
 			self.air.plot_evolution()
 
@@ -74,7 +74,7 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 			print(self.air.tcr.stage_control(t))
 			self.air.t_prev = t
 
-		under_glacier = u-self.glacier.u_0 <= self.glacier.length(t) > 0
+		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			# prescribe fixed temperature underneath the glacier body
 			value = self.glacier.temperature(u,t)
@@ -129,17 +129,15 @@ class BCT_LateralHeatFlux(OpenGeoSys.BoundaryCondition):
 		self.props = props
 		# instantiate member objects of the external geosphere
 		self.air = air.air(ac.T_ini, ac.T_min, ac.t_)
-		u_min, _ = model_uvw(props, 0)
-		self.glacier = glc.glacier(L_max(props), ac.H_max, u_min, ac.t_)
+		u_min, u_max = model_uvw(props, 0)
+		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 		v_min, v_max = model_uvw(props, 1)
 		self.crust = crc.crust(ac.q_geo, v_min, v_max, ac.T_ini, ac.T_bot)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of heat
-		
-		# 
 		u, v, w = self.uvw.assign_coordinates(coords)
 
-		under_glacier = u-self.glacier.u_0 <= self.glacier.length(t) > 0
+		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			T_top = self.glacier.temperature(u,t)
 		else:
@@ -148,8 +146,8 @@ class BCT_LateralHeatFlux(OpenGeoSys.BoundaryCondition):
 		# get heat flux component
 		q_mag = self.crust.lateral_heatflux(v, T_top, self.props)
 
-		u_min, _ = model_uvw(self.props, 0)
-		at_northern_boundary = (u-ac.eps < u_min < u+ac.eps)
+		u_min, u_max = model_uvw(self.props, 0)
+		at_northern_boundary = (u-ac.eps < u_max < u+ac.eps)
 		if at_northern_boundary:
 			value = q_mag			# > 0 : OGS heat influx
 		else:#southern boundary
@@ -202,8 +200,8 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 		self.uvw = uvw.coord_control(props.dimension)
 		# instantiate member objects of the external geosphere
 		self.air = air.air(ac.T_ini, ac.T_min, ac.t_)
-		u_min, _ = model_uvw(props, 0)
-		self.glacier = glc.glacier(L_max(props), ac.H_max, u_min, ac.t_)
+		u_min, u_max = model_uvw(props, 0)
+		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		u, v, w = self.uvw.assign_coordinates(coords)
@@ -212,7 +210,7 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 			print(self.glacier.tcr_h.stage_control(t))
 			self.glacier.t_prev = t
 
-		under_glacier = u-self.glacier.u_0 <= self.glacier.length(t) > 0
+		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			# height dependent pressure from glacier
 			value = self.glacier.pressure(u,t)
@@ -228,15 +226,15 @@ class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 		super(BCH_SurfaceInflux, self).__init__()
 		self.uvw = uvw.coord_control(props.dimension)
 		# instantiate member objects of the external geosphere
-		u_min, _ = model_uvw(props, 0)
-		self.glacier = glc.glacier(L_max(props), ac.H_max, u_min, ac.t_)
+		u_min, u_max = model_uvw(props, 0)
+		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: hydraulic flux
 		u, v, w = self.uvw.assign_coordinates(coords)
 
 		derivative = [0.0] * len(primary_vars)
 
-		under_glacier = u-self.glacier.u_0 <= self.glacier.length(t) > 0
+		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			# get hydraulic flux under glacier
 			value = self.glacier.local_meltwater(u,t)
@@ -276,8 +274,8 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 		super(BCM_SurfaceTraction_X, self).__init__()
 		self.uvw = uvw.coord_control(props.dimension)
 		# instantiate member objects of the external geosphere
-		u_min, _ = model_uvw(props, 0)
-		self.glacier = glc.glacier(L_max(props), ac.H_max, u_min, ac.t_)
+		u_min, u_max = model_uvw(props, 0)
+		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 		if ac.plotinput:
 			self.glacier.print_max_load()
 			self.glacier.plot_evolution()
@@ -288,7 +286,7 @@ class BCM_SurfaceTraction_X(OpenGeoSys.BoundaryCondition):
 
 		derivative = [0.0] * len(primary_vars)
 
-		under_glacier = u-self.glacier.u_0 <= self.glacier.length(t) > 0
+		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			value = self.glacier.tangentialstress(u,t)
 			return (True, value, derivative)
@@ -301,15 +299,15 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 		super(BCM_SurfaceTraction_Y, self).__init__()
 		self.uvw = uvw.coord_control(props.dimension)
 		# instantiate member objects of the external geosphere
-		u_min, _ = model_uvw(props, 0)
-		self.glacier = glc.glacier(L_max(props), ac.H_max, u_min, ac.t_)
+		u_min, u_max = model_uvw(props, 0)
+		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
 		u, v, w = self.uvw.assign_coordinates(coords)
 
 		derivative = [0.0] * len(primary_vars)
 
-		under_glacier = u-self.glacier.u_0 <= self.glacier.length(t) > 0
+		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			value = self.glacier.normalstress(u,t)
 			return (True, value, derivative)
