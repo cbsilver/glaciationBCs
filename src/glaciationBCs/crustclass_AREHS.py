@@ -37,10 +37,11 @@ class crust():
 		return DT/Dv * (v - self.v_max) + T_atm
 
 	def lateral_heatflux(self, v, T_atm, props):
+		# only for salt models
 		if props.model_id == 3:
 			for i, lv in enumerate(props.south_layer_bounds[:-1]):
 				if lv >= v > props.south_layer_bounds[i+1]:
-					if "z" in props.name_array[i]:
+					if props.rock_type_array[i] == "salt":
 						return 0.
 					break
 		# linear profile according to decreasing fluid velocity		
