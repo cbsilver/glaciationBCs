@@ -247,6 +247,28 @@ class BCH_VerticalGradient(OpenGeoSys.BoundaryCondition):
 	def __init__(self, props):
 		super(BCH_VerticalGradient, self).__init__()
 		self.uvw = uvw.coord_control(props.dimension)
+		# instantiate member objects of the external geosphere
+		self.air = air.air(ac.T_ini, ac.T_min, ac.t_)
+		v_min, v_max = model_uvw(props, 1)
+		self.crust = crc.crust(ac.q_geo, v_min, v_max, ac.T_ini, ac.T_bot)
+
+	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
+		u, v, w = self.uvw.assign_coordinates(coords)
+
+		# height dependent pressure from the crust
+		p_pore = self.crust.hydrostatic_pressure(v)
+		# fixed pressure from ambient air
+		p_atmo = self.air.pressure
+
+		value = p_pore + p_atmo
+
+		return (True, value)
+
+class BCH_VerticalGradientExtended(OpenGeoSys.BoundaryCondition):
+
+	def __init__(self, props):
+		super(BCH_VerticalGradientExtended, self).__init__()
+		self.uvw = uvw.coord_control(props.dimension)
 		u_min, u_max = model_uvw(props, 0)
 		v_min, v_max = model_uvw(props, 1)
 		# instantiate member objects of the external geosphere
