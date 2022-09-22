@@ -68,10 +68,10 @@ class crust():
 				break
 		return -stress
 
-	def plot_profile(self, T_atm):
+	def plot_profile(self, T_atm, props):
 		vRange = np.linspace(self.v_min,self.v_max,20)
 		#fRange = self.hydrostatic_pressure(vRange)
-		fRange = self.lateral_heatflux(vRange, T_atm)
+		fRange = self.lateral_heatflux(vRange, T_atm, props)
 		fig,ax = plt.subplots()
 		ax.set_title('Vertical profile')
 		ax.plot(fRange, vRange)
@@ -80,7 +80,7 @@ class crust():
 		ax.grid()
 		plt.show()
 
-	def plot_lithostatic_stress(self):
+	def plot_lithostatic_stress(self, props):
 		vRange = np.linspace(0,-1000, 100)
 		fRange = [1e-6*self.lithostatic_stresses(v, props)[0] for v in vRange]
 		fig,ax = plt.subplots()
@@ -91,12 +91,12 @@ class crust():
 		ax.grid()
 		plt.show()
 
-	def plot_profile_evolution(self):
+	def plot_profile_evolution(self, props):
 		vRange = np.linspace(self.v_min,self.v_max,20)
 		TRange = np.linspace(self.T_ini,self.T_ini-10,10)
 		fig,ax = plt.subplots()
 		for T_atm in TRange:
-			fRange = self.lateral_heatflux(vRange, T_atm)
+			fRange = self.lateral_heatflux(vRange, T_atm, props)
 			ax.plot(fRange, vRange, label='T_atm=$%.2f $ ' %(T_atm))
 		ax.set_title('Vertical profile')
 		ax.set_xlabel('$q_x$ / W/m²')
