@@ -96,8 +96,8 @@ class glacier():
 		ax.set_xlabel('$u$ / m')
 		ax.set_ylabel('height / m')
 		ax.grid()
-		fig.legend()
 		# fig.savefig("glacier_test.png")
+		plt.legend(loc='upper left', bbox_to_anchor = (1.05, 1.0))
 		plt.show()
 
 	def plot_evolution(self):

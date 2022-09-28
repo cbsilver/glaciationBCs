@@ -31,7 +31,7 @@ class time_control():
 		self.f_ = f_
 
 	def time_modulation(self, t):
-		return t%self.t_[6]
+		return t % self.t_[6]
 
 	def stage_control(self, t):
 		print("t = %.1f years (%d s)" % (t/s_a, t))
@@ -56,7 +56,7 @@ class time_control():
 											self.f_[i], self.f_[i+1])
 
 	def plot_evolution(self):
-		tRange = np.ravel([np.array(self.t_[:-1])+i*self.t_[6] for i in range(5)])
+		tRange = np.ravel([np.array(self.t_[::-1])+i*self.t_[6] for i in range(1)])
 		fRange = [self.function_value(t) for t in tRange]
 		fig,ax = plt.subplots()
 		ax.set_title('Temporal evolution')

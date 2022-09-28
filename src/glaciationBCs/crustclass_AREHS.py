@@ -102,5 +102,6 @@ class crust():
 		ax.set_xlabel('$q_x$ / W/m²')
 		ax.set_ylabel('$v$ / m')
 		ax.grid()
-		fig.legend()
+		#fig.legend()
+		plt.legend(loc='upper left', bbox_to_anchor = (1.05, 1.0))
 		plt.show()

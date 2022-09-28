@@ -82,5 +82,5 @@ class repo():
 		plt.ylabel('Leistung [kW]')
 		plt.legend(loc='upper right')
 		plt.grid(True)
-		plt.savefig("repo_test.png")
+		#plt.savefig("repo_test.png")
 		# plt.show()
