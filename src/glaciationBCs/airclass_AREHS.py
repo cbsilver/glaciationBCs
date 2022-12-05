@@ -19,7 +19,7 @@ class air():
 
 		self.t_ = t_
 		self.t_prev = 0.
-		T_ = [T_ini, T_ini, T_min, T_min, T_min, T_min, T_ini]
+		T_ = [T_ini, T_ini, T_min, T_min, T_min, T_min, T_ini, T_ini]
 		self.tcr = tcr.time_control(t_, T_)
 
 	# linear temperature profile from north to south

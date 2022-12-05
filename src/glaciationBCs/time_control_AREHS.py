@@ -21,7 +21,9 @@ class time_control():
 	4 : "glacier dormancy",		  # part glacial (cold) period
 	# t5->t6
 	5 : "glacier retreat",		  # interglacial (warm) period
-	# t6->... repeat cycle
+	# t6->t7
+	6 : "interglacial period"	  # interglacial (warm) period
+	# t7->... repeat cycle
 	}
 
 	# constructor
@@ -31,11 +33,11 @@ class time_control():
 		self.f_ = f_
 
 	def time_modulation(self, t):
-		return t % self.t_[6]
+		return t%self.t_[-1]
 
 	def stage_control(self, t):
 		print("t = %.1f years (%d s)" % (t/s_a, t))
-		for i in range(6)[::-1]:
+		for i in range(len(self.t_))[::-1]:
 			if (self.time_modulation(t) >= self.t_[i]):
 				return self.stages[i]
 		return "undefined stage"
@@ -50,13 +52,13 @@ class time_control():
 
 	def function_value(self, t):
 		t_mod = self.time_modulation(t)
-		for i in range(6)[::-1]:
+		for i in range(len(self.t_))[::-1]:
 			if (t_mod >= self.t_[i]):
 				return self.linear_function(t_mod, self.t_[i], self.t_[i+1],
 											self.f_[i], self.f_[i+1])
 
 	def plot_evolution(self):
-		tRange = np.ravel([np.array(self.t_[::-1])+i*self.t_[6] for i in range(1)])
+		tRange = np.ravel([np.array(self.t_[::-1])+i*self.t_[-1] for i in range(len(self.t_)-2)])
 		fRange = [self.function_value(t) for t in tRange]
 		fig,ax = plt.subplots()
 		ax.set_title('Temporal evolution')

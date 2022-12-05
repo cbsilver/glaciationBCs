@@ -28,7 +28,8 @@ t_3 = t_2 + 20000 * s_a #s
 t_4 = t_3 + 20000 * s_a #s
 t_5 = t_4 + 30000 * s_a #s
 t_6 = t_5 + 10000 * s_a #s
-t_ = [t_0, t_1, t_2, t_3, t_4, t_5, t_6]
+t_7 = t_6 +  5000 * s_a #s
+t_ = [t_0, t_1, t_2, t_3, t_4, t_5, t_6, t_7]
 
 # Thermal Parametrization
 q_geo = 0.065		 #W/m²   set to 0 to see the effect clearly

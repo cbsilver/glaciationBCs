@@ -41,7 +41,7 @@ class crust():
 		if props.model_id == 3:
 			for i, lv in enumerate(props.south_layer_bounds[:-1]):
 				if lv >= v > props.south_layer_bounds[i+1]:
-					if props.rock_type_array[i] == "salt":
+					if props.H_deactivated[i]:
 						return 0.
 					break
 		# linear profile according to decreasing fluid velocity		
