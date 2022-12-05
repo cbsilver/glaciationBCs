@@ -213,7 +213,7 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			# height dependent pressure from glacier
-			value = self.glacier.pressure(u,t)
+			value = self.glacier.pressure(u,t) + self.air.pressure
 		else:
 			# fixed pressure from ambient air
 			value = self.air.pressure
@@ -330,6 +330,7 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 		self.uvw = uvw.coord_control(props.dimension)
 		u_min, u_max = model_uvw(props, 0)
 		# instantiate member objects of the external geosphere
+		self.air = air.air(ac.T_ini, ac.T_min, ac.t_)
 		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 
 	def getFlux(self, t, coords, primary_vars): #here Neumann BC: flux of linear momentum
@@ -339,10 +340,11 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
-			value = self.glacier.normalstress(u,t)
-			return (True, value, derivative)
-		# no BC => free boundary then (no flux)
-		return (False, 0.0, derivative)
+			value = self.glacier.normalstress(u,t) + (-self.air.pressure)
+		else:
+			# fixed pressure from ambient air
+			value = -self.air.pressure
+		return (True, value, derivative)
 
 class BCM_BottomDisplacement_X(OpenGeoSys.BoundaryCondition):
 
