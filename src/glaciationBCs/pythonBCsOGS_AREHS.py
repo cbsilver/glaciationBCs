@@ -99,7 +99,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		u, v, w = self.uvw.assign_coordinates(coords)
 		
 		# prescribe heat flux from radioactive repository
-		value = self.repo.radioactive_heatflux(t)			
+		value = self.repo.radioactive_heatflux(t)
 
 		derivative = [0.0] * len(primary_vars)
 		return (value, derivative)
@@ -285,7 +285,7 @@ class BCH_VerticalGradientExtended(OpenGeoSys.BoundaryCondition):
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			# height dependent pressure from glacier
-			p_extr = self.glacier.pressure(u,t)
+			p_extr = self.glacier.pressure(u,t) + self.air.pressure
 		else:
 			# fixed pressure from ambient air
 			p_extr = self.air.pressure
@@ -344,6 +344,7 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 		else:
 			# fixed pressure from ambient air
 			value = -self.air.pressure
+
 		return (True, value, derivative)
 
 class BCM_BottomDisplacement_X(OpenGeoSys.BoundaryCondition):
