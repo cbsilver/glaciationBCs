@@ -97,7 +97,7 @@ class crust():
 		return -stress
 
 	def plot_profile(self, T_atm, props):
-		vRange = np.linspace(-500000,self.v_max,20)
+		vRange = np.linspace(self.v_min,self.v_max,20)
 		#fRange = self.hydrostatic_pressure(vRange)
 		#fRange = self.lateral_heatflux(vRange, T_atm, props)
 		fRange1 = self.hydrostatic_pressure_lin(vRange)
