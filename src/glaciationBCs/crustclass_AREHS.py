@@ -7,10 +7,14 @@ import matplotlib.pyplot as plt
 from glaciationBCs.constants_AREHS import gravity
 from glaciationBCs.constants_AREHS import rho_wat
 from glaciationBCs.constants_AREHS import c_p_wat
+from glaciationBCs.constants_AREHS import beta_pw
+from glaciationBCs.constants_AREHS import beta_Tw
 
 class crust():
 	# class variables:
 	V_fluid_max = 1e-11	#m/s
+	p_ref = 1e5 	#Pa
+	T_ref = 273.15 	#K
 
 	# constructor
 	def __init__(self, q_geo, v_min, v_max, T_ini, T_bot):
@@ -20,6 +24,9 @@ class crust():
 		self.v_max = v_max
 		self.T_bot = T_bot
 		self.T_ini = T_ini
+
+	def water_density(self, p ,T):
+		return rho_wat * (1 + beta_Tw*(T-self.T_ref) + beta_pw*(p-self.p_ref))
 
 	def geothermal_heatflux(self):
 		return [0.0, self.q_geo, 0.0]
@@ -51,8 +58,29 @@ class crust():
 		return q_heat
 
 	def hydrostatic_pressure(self, v):
+		return self.hydrostatic_pressure_lin(v)
+
+	def hydrostatic_pressure_lin(self, v):
 		# linear profile according to gravity
 		p_pore = rho_wat * gravity * (self.v_max - v)
+		return p_pore
+
+	def hydrostatic_pressure_exp(self, v):
+		# exponential profile according to pressure dependence
+		arg = rho_wat * gravity * (self.v_max - v) * beta_pw
+		p_pore = (np.exp(arg) - 1) / beta_pw
+		return p_pore
+
+	def hydrostatic_pressure_qua(self, v, T_atm):
+		# estimate temperature gradient
+		DT = self.T_bot - T_atm
+		Dv = (self.v_min - self.v_max)
+		gradT_geo = DT/Dv
+		gradT_geo = 3./100 # K/m
+		# quadratic profile according to density dependending on temperature
+		linear = rho_wat * gravity * (self.v_max - v)
+		factor = 1 + beta_Tw * ((T_atm-self.T_ref) - 0.5 * gradT_geo * (self.v_max - v))
+		p_pore = linear * factor
 		return p_pore
 
 	def lithostatic_stresses(self, v, props):
@@ -71,13 +99,23 @@ class crust():
 	def plot_profile(self, T_atm, props):
 		vRange = np.linspace(self.v_min,self.v_max,20)
 		#fRange = self.hydrostatic_pressure(vRange)
-		fRange = self.lateral_heatflux(vRange, T_atm, props)
+		#fRange = self.lateral_heatflux(vRange, T_atm, props)
+		fRange1 = self.hydrostatic_pressure_lin(vRange)
+		fRange2 = self.hydrostatic_pressure_exp(vRange)
+		fRange3 = self.hydrostatic_pressure_qua(vRange, T_atm)
+		fRange4 = fRange2 - fRange1
+		fRange5 = fRange3 - fRange1
 		fig,ax = plt.subplots()
 		ax.set_title('Vertical profile')
-		ax.plot(fRange, vRange)
+		ax.plot(fRange1, vRange, label='linear')
+		ax.plot(fRange2, vRange, label='exponential')
+		ax.plot(fRange3, vRange, label='quadratic')
+		#ax.plot(fRange4, vRange, label='exponential - linear')
+		#ax.plot(fRange5, vRange, label='quadratic - linear')
 		ax.set_xlabel('$p$ / Pa')
 		ax.set_ylabel('$y$ / m')
 		ax.grid()
+		fig.legend()
 		plt.show()
 
 	def plot_lithostatic_stress(self, props):

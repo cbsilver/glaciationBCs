@@ -8,6 +8,8 @@ gravity = 9.81		 #m/s²
 rho_wat = 1000		 #kg/m³
 rho_ice = 900		 #kg/m³
 c_p_wat = 4280		 #J/kg/K
+beta_pw = 5e-10		 #1/Pa/K
+beta_Tw =-257e-6	 #1/Pa/T
 
 # Numerical constants
 s_a = 365.25*24*3600 #=31557600 seconds per year
