@@ -59,8 +59,7 @@ class crust():
 
 	def hydrostatic_pressure(self, v):
 		#return self.hydrostatic_pressure_lin(v)
-		#return self.hydrostatic_pressure_exp(v)
-		return self.hydrostatic_pressure_qua(v, 281.65)
+		return self.hydrostatic_pressure_exp(v)
 
 	def hydrostatic_pressure_lin(self, v):
 		# linear profile according to gravity
