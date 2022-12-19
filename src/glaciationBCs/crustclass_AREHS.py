@@ -13,8 +13,8 @@ from glaciationBCs.constants_AREHS import beta_Tw
 class crust():
 	# class variables:
 	V_fluid_max = 1e-11	#m/s
-	p_ref = 1e5 	#Pa
-	T_ref = 273.15 	#K
+	p_ref = 1e5 	#Pa TODO: should be equal to air.pressure
+	T_ref = 298.15 	#K
 
 	# constructor
 	def __init__(self, q_geo, v_min, v_max, T_ini, T_bot):
@@ -58,7 +58,9 @@ class crust():
 		return q_heat
 
 	def hydrostatic_pressure(self, v):
-		return self.hydrostatic_pressure_lin(v)
+		#return self.hydrostatic_pressure_lin(v)
+		#return self.hydrostatic_pressure_exp(v)
+		return self.hydrostatic_pressure_qua(v, 281.65)
 
 	def hydrostatic_pressure_lin(self, v):
 		# linear profile according to gravity
@@ -72,11 +74,8 @@ class crust():
 		return p_pore
 
 	def hydrostatic_pressure_qua(self, v, T_atm):
-		# estimate temperature gradient
-		DT = self.T_bot - T_atm
-		Dv = (self.v_min - self.v_max)
-		gradT_geo = DT/Dv
-		gradT_geo = 3./100 # K/m
+		# prescribe estimated constant temperature gradient
+		gradT_geo = 0.02 # K/m, ~3./100
 		# quadratic profile according to density dependending on temperature
 		linear = rho_wat * gravity * (self.v_max - v)
 		factor = 1 + beta_Tw * ((T_atm-self.T_ref) - 0.5 * gradT_geo * (self.v_max - v))
