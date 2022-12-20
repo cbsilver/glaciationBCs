@@ -211,12 +211,10 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 			self.glacier.t_prev = t
 
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
+		value = self.air.pressure
 		if under_glacier:
 			# height dependent pressure from glacier
-			value = self.glacier.pressure(u,t) + self.air.pressure
-		else:
-			# fixed pressure from ambient air
-			value = self.air.pressure
+			value += self.glacier.pressure(u,t)
 
 		return (True, value)
 
@@ -283,13 +281,11 @@ class BCH_VerticalGradientExtended(OpenGeoSys.BoundaryCondition):
 		p_pore = self.crust.hydrostatic_pressure(v)
 		# fixed pressure from ambient air/glacier
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
+		p_extr = self.air.pressure
 		if under_glacier:
 			# height dependent pressure from glacier
-			p_extr = self.glacier.pressure(u,t) + self.air.pressure
-		else:
-			# fixed pressure from ambient air
-			p_extr = self.air.pressure
-
+			p_extr += self.glacier.pressure(u,t)
+			
 		value = p_pore + p_extr
 
 		return (True, value)
@@ -339,11 +335,9 @@ class BCM_SurfaceTraction_Y(OpenGeoSys.BoundaryCondition):
 		derivative = [0.0] * len(primary_vars)
 
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
+		value = -self.air.pressure
 		if under_glacier:
-			value = self.glacier.normalstress(u,t) + (-self.air.pressure)
-		else:
-			# fixed pressure from ambient air
-			value = -self.air.pressure
+			value += self.glacier.normalstress(u,t)
 
 		return (True, value, derivative)
 
