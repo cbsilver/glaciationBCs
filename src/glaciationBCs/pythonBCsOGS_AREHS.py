@@ -9,7 +9,6 @@ from glaciationBCs import repoclass_AREHS as dgr	# repository
 from glaciationBCs import airclass_AREHS as air		# atmosphere
 import glaciationBCs.constants_AREHS as ac		    # AREHS constants
 
-import numpy as np
 import pyvista as pv
 import OpenGeoSys
 
@@ -264,25 +263,24 @@ class BCH_VerticalGradient(OpenGeoSys.BoundaryCondition):
 
 class BCH_VerticalGradientFromInit(OpenGeoSys.BoundaryCondition):
 
-	def __init__(self, props):
+	def __init__(self, props, boundary_result_path):
 		super(BCH_VerticalGradientFromInit, self).__init__()
-		mesh = pv.get_reader(props.init_result_vtu).read()
-		mask = np.isclose(mesh.points[:, 1], mesh.bounds[2])  # south
-		self.init_coords = mesh.points[mask]
-		for key in ["pressure_interpolated", "pressure"]:
-			if key in mesh.point_data.keys():
-				self.init_data = mesh.point_data[key][mask]
-				return
-			
-
-	def get_closest_value(self, coords):
-		data_best_ind = np.argmin(np.linalg.norm(self.init_coords - coords, axis=1))
-		closest_value = self.init_data[data_best_ind]		
-		return closest_value
+		
+		pvr = pv.get_reader(boundary_result_path)
+		pvr.set_active_time_value(pvr.time_values[-1])
+		mesh = pvr.read()[0]
+		if "pressure_interpolated" in mesh.point_data.keys():
+			self.init_data = mesh.point_data["pressure_interpolated"]
+		elif "pressure" in mesh.point_data.keys():
+			self.init_data = mesh.point_data["pressure"]
+		else:
+			raise Exception("No pressure data in boundary result!")
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		# p_init = p_pore + p_air
-		p_init = self.get_closest_value(coords)
+		#index = np.argmin(np.linalg.norm(self.init_coords - coords, axis=1))
+		#print(index, node_id)
+		p_init = self.init_data[node_id]
 		return (True, p_init)
 
 class BCH_VerticalGradientExtended(OpenGeoSys.BoundaryCondition):
@@ -316,32 +314,30 @@ class BCH_VerticalGradientExtended(OpenGeoSys.BoundaryCondition):
 
 class BCH_VerticalGradientExtendedFromInit(OpenGeoSys.BoundaryCondition):
 
-	def __init__(self, props):
+	def __init__(self, props, boundary_result_path):
 		super(BCH_VerticalGradientExtendedFromInit, self).__init__()
 		self.uvw = uvw.coord_control(props.dimension)
 		u_max = model_uvw(props, 0)[1]
 		# instantiate member objects of the external geosphere
 		self.glacier = glc.glacier(L_max(props), ac.H_max, u_max, ac.t_)
 
-		mesh = pv.get_reader(props.init_result_vtu).read()
-		mask = np.isclose(mesh.points[:, 1], mesh.bounds[3])  # north
-		self.init_coords = mesh.points[mask]
-		for key in ["pressure_interpolated", "pressure"]:
-			if key in mesh.point_data.keys():
-				self.init_data = mesh.point_data[key][mask]
-				return
-			
+		pvr = pv.get_reader(boundary_result_path)
+		pvr.set_active_time_value(pvr.time_values[-1])
+		mesh = pvr.read()[0]
+		if "pressure_interpolated" in mesh.point_data.keys():
+			self.init_data = mesh.point_data["pressure_interpolated"]
+		elif "pressure" in mesh.point_data.keys():
+			self.init_data = mesh.point_data["pressure"]
+		else:
+			raise Exception("No pressure data in boundary result!")
 
-	def get_closest_value(self, coords):
-		data_best_ind = np.argmin(np.linalg.norm(self.init_coords - coords, axis=1))
-		closest_value = self.init_data[data_best_ind]		
-		return closest_value
 
 	def getDirichletBCValue(self, t, coords, node_id, primary_vars):
 		u = self.uvw.assign_coordinates(coords)[0]
 
 		# p_init = p_pore + p_air
-		p_init = self.get_closest_value(coords)
+		#index = np.argmin(np.linalg.norm(self.init_coords - coords, axis=1))
+		p_init = self.init_data[node_id]
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		p_total = p_init
 		if under_glacier:
