@@ -34,7 +34,7 @@ t_7 = t_6 +  5000 * s_a #s
 t_ = [t_0, t_1, t_2, t_3, t_4, t_5, t_6, t_7]
 
 # Thermal Parametrization
-q_geo = 0.065		 #W/m²   set to 0 to see the effect clearly
+q_geo = 0.070		 #W/m²   set to 0 to see the effect clearly
 T_ini = 273.15 + 8.5 #K
 T_min = 273.15 - 1.5 #K
 T_bot = 345.783      #K
