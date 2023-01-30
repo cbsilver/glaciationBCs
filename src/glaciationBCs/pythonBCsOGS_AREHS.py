@@ -10,6 +10,7 @@ from glaciationBCs import airclass_AREHS as air		# atmosphere
 import glaciationBCs.constants_AREHS as ac		    # AREHS constants
 
 import pyvista as pv
+import numpy as np
 import OpenGeoSys
 
 # Nomenclature: BC Process_LocationQuantity_Component
@@ -92,7 +93,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		if dim == 2:
 			repo_size = repo.bounds[1] - repo.bounds[0]
 		if dim == 3:
-			repo_size = repo.area
+			repo_size = np.sum(repo.compute_cell_sizes().cell_data["Area"])
 		# instantiate member objects of the external geosphere
 		self.repo = dgr.repo(ac.BE_Q, ac.BE_z, ac.BE_f, ac.HA_Q, ac.HA_z, ac.HA_f, ac.BE_vol, ac.HA_vol,
 							 repo_size, ac.t_inter_BE, ac.t_inter_HA, ac.t_filled, dim)
