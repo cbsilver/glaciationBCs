@@ -38,7 +38,9 @@ class glacier():
 		return self.fricnum * self.normalstress(u, t)
 
 	def pressure(self, u, t):
-		return -self.normalstress(u,t)
+		# reduce fluid influx to a reasonable amount
+		# TODO: find a better solution like a mixed boundary condition
+		return -0.1*self.normalstress(u,t)
 
 	def temperature(self, u, t):
 		return self.T_under

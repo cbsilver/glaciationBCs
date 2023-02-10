@@ -43,14 +43,14 @@ class crust():
 		Dv = (self.v_min - self.v_max)
 		return DT/Dv * (v - self.v_max) + T_atm
 
-	def lateral_heatflux(self, v, T_atm, props):
+	def lateral_heatflux(self, v, T_atm):
 		# only for salt models
-		if props.model_id == 3:
-			for i, lv in enumerate(props.south_layer_bounds[:-1]):
-				if lv >= v > props.south_layer_bounds[i+1]:
-					if props.H_deactivated[i]:
-						return 0.
-					break
+		# if props.model_id == 3:
+		# 	for i, lv in enumerate(props.south_layer_bounds[:-1]):
+		# 		if lv >= v > props.south_layer_bounds[i+1]:
+		# 			if props.H_deactivated[i]:
+		# 				return 0.
+		# 			break
 		# linear profile according to decreasing fluid velocity		
 		Dv = (self.v_min - self.v_max)
 		V_fluid = self.V_fluid_max * (v - self.v_max) / Dv
@@ -81,23 +81,23 @@ class crust():
 		p_pore = linear * factor
 		return p_pore
 
-	def lithostatic_stresses(self, v, props):
-		heights = np.abs(np.diff(props.south_layer_bounds))
-		rho_eff = (1. - props.poro_array) * props.rho_array + \
-					(props.poro_array - props.biot_array) * 1000.
-		layer_stress = rho_eff * gravity * heights
-		total_stress = np.append(0, np.add.accumulate(layer_stress[:-1]))
-		stress = [0., 0., 0.]
-		for i, (ls, lh, lv, ts, nu, ab) in enumerate(zip(layer_stress, heights, props.south_layer_bounds[:-1], total_stress, props.nu_array, props.biot_array)):
-			if lv >= v >= props.south_layer_bounds[i+1]:
-				stress = np.array([nu / (1. - nu), 1., nu / (1. - nu)]) * ls/lh * (lv - v) + ts
-				break
-		return -stress
+	# def lithostatic_stresses(self, v, props):
+	# 	heights = np.abs(np.diff(props.south_layer_bounds))
+	# 	rho_eff = (1. - props.poro_array) * props.rho_array + \
+	# 				(props.poro_array - props.biot_array) * 1000.
+	# 	layer_stress = rho_eff * gravity * heights
+	# 	total_stress = np.append(0, np.add.accumulate(layer_stress[:-1]))
+	# 	stress = [0., 0., 0.]
+	# 	for i, (ls, lh, lv, ts, nu, ab) in enumerate(zip(layer_stress, heights, props.south_layer_bounds[:-1], total_stress, props.nu_array, props.biot_array)):
+	# 		if lv >= v >= props.south_layer_bounds[i+1]:
+	# 			stress = np.array([nu / (1. - nu), 1., nu / (1. - nu)]) * ls/lh * (lv - v) + ts
+	# 			break
+	# 	return -stress
 
-	def plot_profile(self, T_atm, props):
+	def plot_profile(self, T_atm):
 		vRange = np.linspace(self.v_min,self.v_max,20)
 		#fRange = self.hydrostatic_pressure(vRange)
-		#fRange = self.lateral_heatflux(vRange, T_atm, props)
+		#fRange = self.lateral_heatflux(vRange, T_atm)
 		fRange1 = self.hydrostatic_pressure_lin(vRange)
 		fRange2 = self.hydrostatic_pressure_exp(vRange)
 		fRange3 = self.hydrostatic_pressure_qua(vRange, T_atm)
@@ -116,23 +116,23 @@ class crust():
 		fig.legend()
 		plt.show()
 
-	def plot_lithostatic_stress(self, props):
-		vRange = np.linspace(0,-1000, 100)
-		fRange = [1e-6*self.lithostatic_stresses(v, props)[0] for v in vRange]
-		fig,ax = plt.subplots()
-		ax.set_title('Vertical profile')
-		ax.plot(vRange, fRange)
-		ax.set_ylabel('$sigma$ / MPa')
-		ax.set_xlabel('$y$ / m')
-		ax.grid()
-		plt.show()
+	# def plot_lithostatic_stress(self, props):
+	# 	vRange = np.linspace(0,-1000, 100)
+	# 	fRange = [1e-6*self.lithostatic_stresses(v, props)[0] for v in vRange]
+	# 	fig,ax = plt.subplots()
+	# 	ax.set_title('Vertical profile')
+	# 	ax.plot(vRange, fRange)
+	# 	ax.set_ylabel('$sigma$ / MPa')
+	# 	ax.set_xlabel('$y$ / m')
+	# 	ax.grid()
+	# 	plt.show()
 
-	def plot_profile_evolution(self, props):
+	def plot_profile_evolution(self):
 		vRange = np.linspace(self.v_min,self.v_max,20)
 		TRange = np.linspace(self.T_ini,self.T_ini-10,10)
 		fig,ax = plt.subplots()
 		for T_atm in TRange:
-			fRange = self.lateral_heatflux(vRange, T_atm, props)
+			fRange = self.lateral_heatflux(vRange, T_atm)
 			ax.plot(fRange, vRange, label='T_atm=$%.2f $ ' %(T_atm))
 		ax.set_title('Vertical profile')
 		ax.set_xlabel('$q_x$ / W/m²')
