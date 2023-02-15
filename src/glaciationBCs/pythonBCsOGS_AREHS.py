@@ -98,7 +98,7 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 			repo_size = np.sum(repo.compute_cell_sizes().cell_data["Area"])
 		# instantiate member objects of the external geosphere
 		self.repo = dgr.repo(ac.BE_Q, ac.BE_z, ac.BE_f, ac.HA_Q, ac.HA_z, ac.HA_f, ac.BE_vol, ac.HA_vol,
-							 repo_size, ac.t_inter_BE, ac.t_inter_HA, ac.t_filled, dim)
+							 repo_size, ac.t_inter_BE, ac.t_inter_HA, ac.t_filled)
 		if ac.plotinput:
 			self.repo.print_max_load()
 			self.repo.plot_evolution()

@@ -15,7 +15,7 @@ class repo():
 	def __init__(self, BE_Q, BE_z, BE_f, 
 					   HA_Q, HA_z, HA_f, 
 					   BE_vol, HA_vol, repo_size,
-					   t_inter_BE, t_inter_HA, t_filled, dimension):
+					   t_inter_BE, t_inter_HA, t_filled):
 		# instance variables: owned by instances of the class, can be different for each instance
 		# parameters RK-BE:
 		self.BE_Q = BE_Q
@@ -38,9 +38,6 @@ class repo():
 		self.t_inter_HA = t_inter_HA
 		self.t_filled = t_filled
 		self.t_prev = 0.
-		
-		# dimension:
-		self.dimension = dimension
 		
 	def radioactive_heatflow(self,t): # heat flow = Wärmestrom
 
