@@ -54,13 +54,7 @@ HA_f = (2*0.182/0.72)*0.05
 BE_vol = 7632.0 #m³
 HA_vol = 1342.8 #m³
 
-#TODO: check
-# Times:
-t_zwischen_BE = 23*s_a
-t_zwischen_HA = 30*s_a
-t_voll = 80*s_a
 # => end of stepwise filling = heat source starts in the model
-
 t_inter_BE = 23*s_a
 t_inter_HA = 30*s_a
 t_filled = 80*s_a
