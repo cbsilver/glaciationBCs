@@ -48,24 +48,18 @@ class glacier():
 	# analytical function for the glacier's shape
 	def shape(self, u, t):
 		l = self.length(t)
-		s = self.u_0 - u
-		xi = max(0., s/l)
-		return (max(0., 1. - (xi**2.5))**1.5)
-
-	def local_height(self, u, t):
-		l = self.length(t)
 		if l==0:
 			return 0
-		else:
-			# local coordinate starting from the North: s = u - u_0 (u_0=u_min)
-			# local coordinate starting from the South: s = u_0 - u (u_0=u_max)
-			s = self.u_0 - u
-			xi = max(0., s/l)
-			if xi<=1:
-				return self.height(t) * (max(0., 1. - (xi**2.5))**1.5)
-			else:
-				#print("Warning: local coordinate must not be greater 1, but is ", xi)
-				return 0
+		# local coordinate starting from the North: s = u - u_0 (u_0=u_min)
+		# local coordinate starting from the South: s = u_0 - u (u_0=u_max)
+		s = self.u_0 - u
+		xi = max(0., s/l)
+		if xi<=1:
+			return max(0., 1. - (xi**2.5))**1.5
+		return 0
+
+	def local_height(self, u, t):
+		return self.height(t) * self.shape(u, t)
 
 	# piecewise linear laws for the evolution of the glacier's dimensions
 	def height(self, t):
