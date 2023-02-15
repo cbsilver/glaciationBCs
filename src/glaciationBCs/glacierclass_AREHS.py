@@ -10,12 +10,13 @@ from glaciationBCs.constants_AREHS import gravity
 from glaciationBCs.constants_AREHS import rho_wat
 from glaciationBCs.constants_AREHS import rho_ice
 from glaciationBCs.constants_AREHS import s_a
+from glaciationBCs.constants_AREHS import head_correction
 
 class glacier():
 	# class variables: owned by the class itself, static, shared by all class instances
 	T_under = 273.15 + 0.5 #K
 	fricnum = 0.2
-	qf_melt = 6e-3 * 1 / s_a # = 6mm/a
+	qf_melt = 6e-3 * 10 / s_a # = 6mm/a
 
 	# constructor
 	def __init__(self, L_max, H_max, u_0, t_):
@@ -38,14 +39,19 @@ class glacier():
 		return self.fricnum * self.normalstress(u, t)
 
 	def pressure(self, u, t):
-		# reduce fluid influx to a reasonable amount
-		# TODO: find a better solution like a mixed boundary condition
-		return -0.1*self.normalstress(u,t)
+		# reduced pressure/head to a reasonable amount
+		return -self.normalstress(u,t) * head_correction
 
 	def temperature(self, u, t):
 		return self.T_under
 
 	# analytical function for the glacier's shape
+	def shape(self, u, t):
+		l = self.length(t)
+		s = self.u_0 - u
+		xi = max(0., s/l)
+		return (max(0., 1. - (xi**2.5))**1.5)
+
 	def local_height(self, u, t):
 		l = self.length(t)
 		if l==0:
@@ -71,10 +77,9 @@ class glacier():
 	# analytical function for the glacier meltwater production
 	def local_meltwater(self, u ,t):
 		# constant flux at a temperate glacier base
-		q = qf_melt
+		q = self.qf_melt * self.shape(u, t)
 		# constant flux at a frozen glacier base
-		q = 0.0
-
+		#q = 0.0
 		return q
 
 	# auxiliary functions

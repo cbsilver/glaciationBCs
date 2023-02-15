@@ -20,7 +20,9 @@ plotinput = False
 
 # parameters for glacier
 H_max = 700			 #m
-glacial_advance = 0.8 # 80% of the north-south extension
+glacial_advance = 0.8# 80% of the north-south extension
+head_correction = 0.1# 10% of the hydraulic head acting
+T_smoothtransit = False
 
 # Key points for time control
 t_0 = 0.0 * 0.000 * s_a #s

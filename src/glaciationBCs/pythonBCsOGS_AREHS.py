@@ -78,8 +78,15 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			# prescribe fixed temperature underneath the glacier body
-			value = self.glacier.temperature(u,t)
+			if ac.T_smoothtransit:
+				shape = self.glacier.shape(u,t)
+				Tg = self.glacier.temperature(u,t)
+				Ta = self.air.temperature(t)
+				value = shape * (Tg - Ta) + Ta
+			else:
+				value = self.glacier.temperature(u,t)
 		else:
+			# prescribe fixed temperature from the atmoshpere
 			value = self.air.temperature(t)
 
 		return (True, value)
@@ -196,7 +203,7 @@ class BCH_InitialPressure(OpenGeoSys.BoundaryCondition):
 
 		return (True, value)
 
-
+# TODO: find a better solution like a mixed boundary condition
 class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 
 	def __init__(self, dim, bounds):
