@@ -91,7 +91,9 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		self.uvw = uvw.coord_control(dim)
 		repo = pv.XMLUnstructuredGridReader(repo_path).read()
 		if dim == 2:
-			repo_size = repo.bounds[1] - repo.bounds[0]
+			# one division for representative waste amount per line
+			# second division for norming per line length
+			repo_size = np.sum(repo.compute_cell_sizes().cell_data["Length"])**2
 		if dim == 3:
 			repo_size = np.sum(repo.compute_cell_sizes().cell_data["Area"])
 		# instantiate member objects of the external geosphere

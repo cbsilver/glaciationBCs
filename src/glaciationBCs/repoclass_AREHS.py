@@ -56,11 +56,7 @@ class repo():
 		# shift time to when the dgr is filled completely
 		shifted_t = self.t_filled + t
 		
-		if self.dimension == 2:
-			# take square root in order to compensate one missing space dimension 
-			return np.sqrt(self.radioactive_heatflow(shifted_t)) / self.repo_size
-		else: #3D
-			return self.radioactive_heatflow(shifted_t) / self.repo_size
+		return self.radioactive_heatflow(shifted_t) / self.repo_size
 
 
 	# auxiliary functions
