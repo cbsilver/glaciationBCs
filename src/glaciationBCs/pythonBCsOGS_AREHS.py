@@ -2,6 +2,7 @@
 # BCs reflect the external geosphere: cryo-, litho- and atmosphere
 # Physical units: depending on parameter set, see below!
 
+from glaciationBCs.coord_control_AREHS import uvw_bounds, L_max
 from glaciationBCs import coord_control_AREHS as uvw# coordinates
 from glaciationBCs import glacierclass_AREHS as glc	# glacier
 from glaciationBCs import crustclass_AREHS as crc 	# earth crust
@@ -20,25 +21,6 @@ import OpenGeoSys
 # T			temperature		heat flux
 # H			pressure		hydraulic flux
 # M			displacement	momentum flux (stress vector)
-
-
-# Geomodel-specific parameters
-def uvw_bounds(dim, bounds, axis):
-	coord_ctrl = uvw.coord_control(dim)
-	x_min, x_max, y_min, y_max, z_min, z_max = bounds
-	u_min, v_min, w_min = coord_ctrl.assign_coordinates((x_min, y_min, z_min))
-	u_max, v_max, w_max = coord_ctrl.assign_coordinates((x_max, y_max, z_max))
-	if axis==0:
-		return u_min, u_max 
-	if axis==1:		
-		return v_min, v_max
-	if axis==2:
-		return w_min, w_max
-
-
-def L_max(dim, bounds):
-	u_min, u_max = uvw_bounds(dim, bounds, 0)
-	return ac.glacial_advance * (u_max - u_min)
 
 # ---------------------------------------------------------
 # Thermal BCs

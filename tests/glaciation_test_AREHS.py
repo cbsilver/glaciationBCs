@@ -5,7 +5,7 @@ from glaciationBCs import crustclass_AREHS as crc 	# earth crust
 from glaciationBCs import repoclass_AREHS as dgr	# repository
 from glaciationBCs import airclass_AREHS as air		# atmosphere
 from glaciationBCs.constants_AREHS import *
-from glaciationBCs.pythonBCsOGS_AREHS import uvw_bounds, L_max
+from glaciationBCs.coord_control_AREHS import uvw_bounds, L_max
 
 """
 dimension = 2
@@ -31,7 +31,7 @@ bounds = (9000, 20950, -2216.03, 67.0103, 0., 0.)
 repo_size = 3000
 
 repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol, 
-	repo_size, t_inter_BE, t_inter_HA, t_filled, dim)
+	repo_size, t_inter_BE, t_inter_HA, t_filled)
 repo.plot_evolution()
 repo.print_max_load()
 
