@@ -2,11 +2,7 @@
 # parameterized analytical function for (cyclic) temperature evolution
 # Physical units: kg, m, s, K
 
-import numpy as np
-import matplotlib.pyplot as plt
-
 from glaciationBCs import time_control_AREHS as tcr
-from glaciationBCs.constants_AREHS import s_a
 
 class air():
 	# class variables: owned by the class itself, shared by all instances of the class
