@@ -208,8 +208,8 @@ class BCH_SurfacePressure(OpenGeoSys.BoundaryCondition):
 		if under_glacier:
 			# height dependent pressure from glacier
 			value += self.glacier.pressure(u,t)
-
-		return (True, value)
+		apply_bc = True if primary_vars[0] > 273.15 else False
+		return (apply_bc, value)
 
 class BCH_SurfaceInflux(OpenGeoSys.BoundaryCondition):
 
