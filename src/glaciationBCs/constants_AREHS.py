@@ -23,16 +23,17 @@ H_max = 700			 #m
 glacial_advance = 0.8# 80% of the north-south extension
 head_correction = 0.1# 10% of the hydraulic head acting
 T_smoothtransit = False
+T_smoothing_offset = 500 # m
 
 # Key points for time control
-t_0 = 0.0 * 0.000 * s_a #s
-t_1 = t_0 +  5000 * s_a #s
-t_2 = t_1 + 10000 * s_a #s
-t_3 = t_2 + 20000 * s_a #s
-t_4 = t_3 + 20000 * s_a #s
-t_5 = t_4 + 30000 * s_a #s
-t_6 = t_5 + 10000 * s_a #s
-t_7 = t_6 +  5000 * s_a #s
+t_0 = 0.0 * 0.000 * s_a #s 
+t_1 = t_0 +  5000 * s_a #s interglacial period
+t_2 = t_1 + 10000 * s_a #s permafrost development
+t_3 = t_2 + 20000 * s_a #s permafrost-only period
+t_4 = t_3 + 20000 * s_a #s glacier advance
+t_5 = t_4 + 30000 * s_a #s glacier dormancy
+t_6 = t_5 + 10000 * s_a #s glacier retreat
+t_7 = t_6 +  5000 * s_a #s interglacial period
 t_ = [t_0, t_1, t_2, t_3, t_4, t_5, t_6, t_7]
 
 # Thermal Parametrization
