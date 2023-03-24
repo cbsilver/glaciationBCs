@@ -61,10 +61,12 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 		Ta = self.air.temperature(t)
 		lg = self.glacier.length(t)
 		ug_tip = self.glacier.u_0 - lg
-		u_tran0 = ug_tip - self.glacier.lT_thaw - self.glacier.lT_tran
-		u_tran1 = ug_tip - self.glacier.lT_thaw
+		#lT_thaw = self.glacier.lT_thaw
+		lT_thaw = self.glacier.thawlake(t)
+		u_tran0 = ug_tip - lT_thaw - self.glacier.lT_tran
+		u_tran1 = ug_tip - lT_thaw
 
-		under_glacier = self.glacier.u_0-u - self.glacier.lT_thaw <= lg > 0
+		under_glacier = self.glacier.u_0-u - lT_thaw <= lg > 0
 		if under_glacier:
 			# prescribe fixed temperature underneath the glacier body
 			# with smooth transtion under glacier, or without

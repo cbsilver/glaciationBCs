@@ -31,8 +31,11 @@ class glacier():
 
 		H_ = [0.0, 0.0, 0.0, 0.0, H_max, H_max, 0.0, 0.0]
 		L_ = [0.0, 0.0, 0.0, 0.0, L_max, L_max, 0.0, 0.0]
+		S_ = [0.0, 0.0, 0.0, 0.0, self.lT_thaw, self.lT_thaw, 0.0, 0.0]
+
 		self.tcr_h = tcr.time_control(t_, H_)
 		self.tcr_l = tcr.time_control(t_, L_)
+		self.tcr_s = tcr.time_control(t_, S_)
 
 	def normalstress(self, u, t):
 		return -rho_ice * gravity * self.local_height(u, t)
@@ -69,6 +72,9 @@ class glacier():
 
 	def length(self, t):
 		return self.tcr_l.function_value(t)
+
+	def thawlake(self, t):
+		return self.tcr_s.function_value(t)
 
 	# analytical function for the glacier meltwater production
 	def local_meltwater(self, u ,t):
