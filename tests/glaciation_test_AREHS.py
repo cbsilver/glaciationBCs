@@ -23,22 +23,24 @@ L_max = 0.8 * L_dom
 
 importlib.reload(dgr)
 importlib.reload(crc)
-importlib.reload(glc.tcr)
+importlib.reload(glc)
 
-dim = 3 # or 2
+dim = 2 # or 3
 # xmin, xmax, ymin, ymax, zmin, zmax
 bounds = (9000, 20950, -2216.03, 67.0103, 0., 0.)
 repo_size = 3000
+
+u_min = uvw_bounds(dim, bounds, 0)[0]
+u_max = uvw_bounds(dim, bounds, 0)[1]
+glacier = glc.glacier(L_max(dim, bounds), H_max, u_max, t_)
+glacier.plot_temperature(u_min)
+glacier.plot_evolution()
+glacier.plot_evolving_shape()
 
 repo = dgr.repo(BE_Q, BE_z, BE_f, HA_Q, HA_z, HA_f, BE_vol, HA_vol, 
 	repo_size, t_inter_BE, t_inter_HA, t_filled)
 repo.plot_evolution()
 repo.print_max_load()
-
-u_max = uvw_bounds(dim, bounds, 0)[0]
-glacier = glc.glacier(L_max(dim, bounds), H_max, u_max, t_)
-glacier.plot_evolution()
-glacier.plot_evolving_shape()
 
 air = air.air(T_ini, T_min, t_)
 air.plot_evolution()
