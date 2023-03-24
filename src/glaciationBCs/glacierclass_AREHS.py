@@ -17,6 +17,7 @@ class glacier():
 	T_under = 273.15 + 0.5 #K
 	fricnum = 0.2
 	qf_melt = 6e-3 * 10 / s_a # = 6mm/a
+	l_fore = 500 #m
 
 	# constructor
 	def __init__(self, L_max, H_max, u_0, t_):
@@ -104,3 +105,38 @@ class glacier():
 	def plot_evolution(self):
 		self.tcr_h.plot_evolution()
 		self.tcr_l.plot_evolution()
+
+	def smoothstep (self, edge0, edge1, u):
+		if u < edge0: return 0
+		if u >= edge1: return 1
+
+		#Scale/bias into [0..1] range
+		xi = (u - edge0) / (edge1 - edge0)
+
+		return xi*xi * (3 - 2*xi)
+
+	def plot_temperature(self, u_min):
+		fig,ax = plt.subplots()
+		ax.set_title('Top temperature') #'Gletschervorschub'
+		tRange = np.linspace(self.t_[6], self.t_[0],11)
+		t = tRange[3]
+		lg = self.length(t)
+		lf = self.l_fore
+		u_max = self.u_0
+		ug_tip = u_max - lg
+		#uRange = np.linspace(self.u_0, self.u_0 + self.length(t), 110)
+		uRange = np.linspace(u_min, ug_tip, 220)
+		fRange = np.empty(shape=[0])
+		Tg = +0.5
+		Ta = -1.5
+		for u in uRange:
+			f = self.smoothstep(ug_tip-lf, ug_tip, u)
+			fRange = np.append(fRange, f)
+		TRange = Ta + fRange * (Tg - Ta)
+		ax.plot(uRange, TRange, label='t=$%.2f $ ' %(t/s_a))
+		ax.set_xlabel('$u$ / m')
+		ax.set_ylabel('height / m')
+		ax.grid()
+		# fig.savefig("glacier_test.png")
+		plt.legend(loc='upper left', bbox_to_anchor = (1.05, 1.0))
+		plt.show()

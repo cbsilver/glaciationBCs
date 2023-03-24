@@ -57,19 +57,27 @@ class BCT_SurfaceTemperature(OpenGeoSys.BoundaryCondition):
 			print(self.air.tcr.stage_control(t))
 			self.air.t_prev = t
 
+		Tg = self.glacier.temperature(u,t)
+		Ta = self.air.temperature(t)
+		lg = self.glacier.length(t)
+		lf = self.glacier.l_fore
+		ug_tip = self.glacier.u_0 - lg
+
 		under_glacier = self.glacier.u_0-u <= self.glacier.length(t) > 0
 		if under_glacier:
 			# prescribe fixed temperature underneath the glacier body
 			if ac.T_smoothtransit:
 				shape = self.glacier.shape(u,t)
-				Tg = self.glacier.temperature(u,t)
-				Ta = self.air.temperature(t)
 				value = shape * (Tg - Ta) + Ta
 			else:
-				value = self.glacier.temperature(u,t)
+				value = Tg
 		else:
-			# prescribe fixed temperature from the atmoshpere
-			value = self.air.temperature(t)
+			if lg > 0:
+				# prescribe fixed temperature from the atmoshpere
+				shape = self.glacier.smoothstep(ug_tip-lf, ug_tip, u)
+				value = Ta + shape * (Tg - Ta)
+			else:
+				value = Ta
 
 		return (True, value)
 
