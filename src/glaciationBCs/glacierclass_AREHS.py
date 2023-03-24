@@ -17,7 +17,8 @@ class glacier():
 	T_under = 273.15 + 0.5 #K
 	fricnum = 0.2
 	qf_melt = 6e-3 * 10 / s_a # = 6mm/a
-	l_fore = 500 #m
+	lT_tran = 200 #m
+	lT_thaw = 200 #m
 
 	# constructor
 	def __init__(self, L_max, H_max, u_0, t_):
