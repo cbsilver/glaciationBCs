@@ -79,6 +79,14 @@ class glacier():
 		return q
 
 	# auxiliary functions
+	def smoothstep (self, edge0, edge1, u):
+		if u < edge0: return 0
+		if u >= edge1: return 1
+		#Scale/bias into [0..1] range
+		xi = (u - edge0) / (edge1 - edge0)
+
+		return xi*xi * (3 - 2*xi)
+
 	def print_max_load(self):
 		print("Maximal normal stress due to glacier load: ")
 		print(self.normalstress(self.u_0, self.t_[5])/1e6, "MPa")
@@ -107,36 +115,28 @@ class glacier():
 		self.tcr_h.plot_evolution()
 		self.tcr_l.plot_evolution()
 
-	def smoothstep (self, edge0, edge1, u):
-		if u < edge0: return 0
-		if u >= edge1: return 1
-
-		#Scale/bias into [0..1] range
-		xi = (u - edge0) / (edge1 - edge0)
-
-		return xi*xi * (3 - 2*xi)
-
 	def plot_temperature(self, u_min):
 		fig,ax = plt.subplots()
-		ax.set_title('Top temperature') #'Gletschervorschub'
-		tRange = np.linspace(self.t_[6], self.t_[0],11)
-		t = tRange[3]
+		tRange = np.linspace(self.t_[0], self.t_[6],7)
+		t = tRange[4]
+		t = self.t_[5]
 		lg = self.length(t)
-		lf = self.l_fore
 		u_max = self.u_0
 		ug_tip = u_max - lg
-		#uRange = np.linspace(self.u_0, self.u_0 + self.length(t), 110)
-		uRange = np.linspace(u_min, ug_tip, 220)
+		u_tran0 = ug_tip - self.lT_thaw - self.lT_tran
+		u_tran1 = ug_tip - self.lT_thaw
+		uRange = np.linspace(u_min, ug_tip, 500)
 		fRange = np.empty(shape=[0])
 		Tg = +0.5
 		Ta = -1.5
 		for u in uRange:
-			f = self.smoothstep(ug_tip-lf, ug_tip, u)
+			f = self.smoothstep(u_tran0, u_tran1, u)
 			fRange = np.append(fRange, f)
 		TRange = Ta + fRange * (Tg - Ta)
 		ax.plot(uRange, TRange, label='t=$%.2f $ ' %(t/s_a))
+		ax.set_title('Top temperature')
 		ax.set_xlabel('$u$ / m')
-		ax.set_ylabel('height / m')
+		ax.set_ylabel('$T$ / °C')
 		ax.grid()
 		# fig.savefig("glacier_test.png")
 		plt.legend(loc='upper left', bbox_to_anchor = (1.05, 1.0))
