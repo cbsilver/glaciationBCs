@@ -124,13 +124,13 @@ class glacier():
 	def plot_temperature(self, u_min):
 		fig,ax = plt.subplots()
 		tRange = np.linspace(self.t_[0], self.t_[6],7)
-		t = tRange[4]
-		t = self.t_[5]
+		t = tRange[5]
 		lg = self.length(t)
 		u_max = self.u_0
 		ug_tip = u_max - lg
-		u_tran0 = ug_tip - self.lT_thaw - self.lT_tran
-		u_tran1 = ug_tip - self.lT_thaw
+		lT_thaw = self.thawlake(t)
+		u_tran0 = ug_tip - lT_thaw - self.lT_tran
+		u_tran1 = ug_tip - lT_thaw
 		uRange = np.linspace(u_min, ug_tip, 500)
 		fRange = np.empty(shape=[0])
 		Tg = +0.5
