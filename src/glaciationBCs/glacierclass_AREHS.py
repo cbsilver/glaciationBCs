@@ -31,8 +31,11 @@ class glacier():
 
 		H_ = [0.0, 0.0, 0.0, 0.0, H_max, H_max, 0.0, 0.0]
 		L_ = [0.0, 0.0, 0.0, 0.0, L_max, L_max, 0.0, 0.0]
+		S_ = [0.0, 0.0, 0.0, 0.0, self.lT_thaw, self.lT_thaw, 0.0, 0.0]
+
 		self.tcr_h = tcr.time_control(t_, H_)
 		self.tcr_l = tcr.time_control(t_, L_)
+		self.tcr_s = tcr.time_control(t_, S_)
 
 	def normalstress(self, u, t):
 		return -rho_ice * gravity * self.local_height(u, t)
@@ -69,6 +72,9 @@ class glacier():
 
 	def length(self, t):
 		return self.tcr_l.function_value(t)
+
+	def thawlake(self, t):
+		return self.tcr_s.function_value(t)
 
 	# analytical function for the glacier meltwater production
 	def local_meltwater(self, u ,t):
@@ -118,13 +124,13 @@ class glacier():
 	def plot_temperature(self, u_min):
 		fig,ax = plt.subplots()
 		tRange = np.linspace(self.t_[0], self.t_[6],7)
-		t = tRange[4]
-		t = self.t_[5]
+		t = tRange[5]
 		lg = self.length(t)
 		u_max = self.u_0
 		ug_tip = u_max - lg
-		u_tran0 = ug_tip - self.lT_thaw - self.lT_tran
-		u_tran1 = ug_tip - self.lT_thaw
+		lT_thaw = self.thawlake(t)
+		u_tran0 = ug_tip - lT_thaw - self.lT_tran
+		u_tran1 = ug_tip - lT_thaw
 		uRange = np.linspace(u_min, ug_tip, 500)
 		fRange = np.empty(shape=[0])
 		Tg = +0.5
