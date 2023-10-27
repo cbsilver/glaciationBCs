@@ -6,13 +6,13 @@ from glaciationBCs.coord_control_AREHS import uvw_bounds, L_max
 from glaciationBCs import coord_control_AREHS as uvw# coordinates
 from glaciationBCs import glacierclass_AREHS as glc	# glacier
 from glaciationBCs import crustclass_AREHS as crc 	# earth crust
-from glaciationBCs import repoclass_AREHS as dgr	# repository
 from glaciationBCs import airclass_AREHS as air		# atmosphere
-import glaciationBCs.constants_AREHS as ac		    # AREHS constants
+from glaciationBCs import constants_AREHS as ac		# AREHS constants
+import ogstools.physics.nuclearwasteheat as nuclear
 
 import pyvista as pv
 import numpy as np
-import OpenGeoSys
+import OpenGeoSys # type: ignore
 
 # Nomenclature: BC Process_LocationQuantity_Component
 # 					(THM)					(XYZ) TODO uvw
@@ -95,19 +95,16 @@ class BCT_SourceFromRepository(OpenGeoSys.SourceTerm):
 		if dim == 2:
 			# one division for representative waste amount per line
 			# second division for norming per line length
-			repo_size = np.sum(repo.compute_cell_sizes().cell_data["Length"])**2
+			self.repo_size = np.sum(repo.compute_cell_sizes().cell_data["Length"])**2
 		if dim == 3:
-			repo_size = np.sum(repo.compute_cell_sizes().cell_data["Area"])
+			self.repo_size = np.sum(repo.compute_cell_sizes().cell_data["Area"])
 		# instantiate member objects of the external geosphere
-		self.repo = dgr.repo(ac.BE_Q, ac.BE_z, ac.BE_f, ac.HA_Q, ac.HA_z, ac.HA_f, ac.BE_vol, ac.HA_vol,
-							 repo_size, ac.t_inter_BE, ac.t_inter_HA, ac.t_filled)
-		if ac.plotinput:
-			self.repo.print_max_load()
-			self.repo.plot_evolution()
+		# self.repo = nuclear.repo_be_ha_2016 # previous
+		self.repo = nuclear.repo_2020_conservative # more correct
 
 	def getFlux(self, t, coords, primary_vars):		
 		# prescribe heat flux from radioactive repository
-		value = self.repo.radioactive_heatflux(t)
+		value = self.repo.heat(t) / self.repo_size 
 		derivative = [0.0] * len(primary_vars)
 		return (value, derivative)
 
