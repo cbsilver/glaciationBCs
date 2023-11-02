@@ -62,7 +62,8 @@ glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
 importlib.reload(glc)
 glacier = glc.glacier(L_dom, L_max, H_max, x_0, t_0, t_1, t_2, t_3, t_4)
 
-glacier.plot_deflection_rate()
+glacier.plot_evolution()
+#glacier.plot_deflection_rate()
 """
 
 glacier.read_data_GIA()

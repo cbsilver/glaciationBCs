@@ -91,7 +91,7 @@ class glacier():
 		else:
 			xi = (x-self.x_0) / l
 			if xi<=1: 
-				return self.height(t) * ((1 - (xi**2.5)**1.5))
+				return self.height(t) * ((1 - (xi**2.5))**1.5)
 			else: 
 				#print("Warning: local coordinate must not be greater 1, but is ", xi)
 				return 0
@@ -106,8 +106,8 @@ class glacier():
 			if xi<=1:
 				doth = self.height_rate(t)
 				dotl = self.length_rate(t)
-				part1 = doth / h * ((1 - (xi**2.5)**1.5))
-				part2 = dotl / l * 15/4.0 * ((1 - (xi**2.5)**0.5)) * (xi**2.5)
+				part1 = doth / h * ((1 - (xi**2.5))**1.5)
+				part2 = dotl / l * 15/4.0 * ((1 - (xi**2.5))**0.5) * (xi**2.5)
 				return h * (part1 + part2)
 			else:
 				#print("Warning: local coordinate must not be greater 1, but is ", xi)
@@ -273,20 +273,22 @@ class glacier():
 		
 	def plot_evolution(self):
 		tRange = np.linspace(self.t_1,self.t_0,11)
-		fig,ax = plt.subplots()
-		ax.set_title('Glacier evolution') #'Gletschervorstoß'
+		fig,ax = plt.subplots(figsize=(10, 4))
+		#ax.set_title('Gletscherentwicklung') #'Glacier evolution'
 		for t in tRange:
 			xRange = np.linspace(self.x_0, self.x_0 + self.length(t),110)
 			yRange = np.empty(shape=[0])
 			for x in xRange:
-				y = self.local_height(x,t)	
+				y = self.local_height(x,t)
 				yRange = np.append(yRange,y)
-			ax.plot(xRange,yRange,label='t=$%.2f $ ' %t)
+			ax.plot(xRange,yRange,label='t=$%.2f $ ka ' %(t/1000))
 			ax.fill_between(xRange, 0, yRange)
-		ax.set_xlabel('$x$ / m')
-		ax.set_ylabel('height / m')
-		ax.grid()
-		fig.legend()
+		ax.set_xlabel('Länge / m') #'$x$ / m'
+		ax.set_ylabel('Höhe / m')  # 'height / m'
+		#ax.grid()
+		fig.legend(bbox_to_anchor=(0.95, 0.95), loc='upper right')
+		fig.tight_layout()
+		fig.savefig("glacier_test.png")
 		plt.show()
 	
 	def check_deflection_continuity(self):
